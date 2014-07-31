@@ -19,6 +19,6 @@
 	"scripts": {
 		"test": "npm -s run-script lint && npm -s run-script browsertest",
 		"lint": "eslint lib",
-		"browsertest": "mocha test/test.js"
+		"browsertest": "mocha ./test/test.js"
 	}
 }
