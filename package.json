@@ -10,5 +10,9 @@
 		"brytecore"
 	],
 	"repository": "https://github.com/Brytecore/brytescore.js.git",
-	"main": "brytescore.js"
+	"main": "brytescore.js",
+	"dependencies": {},
+	"devDependencies": {
+
+	}
 }
