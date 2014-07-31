@@ -1,0 +1,9 @@
+# Mac hidden attribute files
+*.DS_Store
+
+# PC hidden files
+[Tt]humbs.db
+desktop.ini
+
+# WebStorm
+.idea/
