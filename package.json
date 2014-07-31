@@ -10,9 +10,15 @@
 		"brytecore"
 	],
 	"repository": "https://github.com/Brytecore/brytescore.js.git",
-	"main": "brytescore.js",
+	"main": "lib/brytescore.js",
 	"dependencies": {},
 	"devDependencies": {
-
+		"mocha": "1.21.x",
+		"eslint": "0.7.x"
+	},
+	"scripts": {
+		"test": "npm -s run-script lint && npm -s run-script browsertest",
+		"lint": "eslint lib",
+		"browsertest": "mocha test/test.js"
 	}
 }
