@@ -3,8 +3,19 @@
 <head>
 	<title>Brytescore Analytics Example</title>
 	<link rel="stylesheet" type="text/css" href="css/examples.css">
+	<script>
+		var start = new Date().getTime();
+		function elapsed() {
+			var diff = ( new Date().getTime() - start );
+			diff += 'ms';
+			return diff;
+		}
+		console.log( 'Loading snippet...' + elapsed() );
+	</script>
 	<script src="js/snippet.js"></script>
 	<script>
+		console.log( 'calling it here...' + elapsed() );
+		brytescore( 'is_loaded' );
 		brytescore( "track", "fakeEvent", { "data1": "some_data1", "data2": "some_data2" } );
 		console.log( brytescore.q );
 	</script>
