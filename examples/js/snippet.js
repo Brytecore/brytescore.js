@@ -10,5 +10,5 @@
 	generated_script.src = script_source;
 	calling_script.parentNode.insertBefore( generated_script, calling_script )
 })( document, 'script', '../lib/brytescore.js', window, 'brytescore' );
-brytescore( 'api_key', 'DEMO_API_KEY' );
+brytescore( 'setAPIKey', 'DEMO_API_KEY' );
 brytescore( 'pageview' );

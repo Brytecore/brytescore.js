@@ -13,9 +13,9 @@ API Key.
 <!-- Brytescore -->
 <script>
 (function(a,c,g,e,d,f,b){e[d]=e[d]||function(){(e[d].q=e[d].q||[]).push(arguments)};e[d].t=1*new Date();
-b=a.getElementsByTagName(c)[0];f=a.createElement(c);f.async=1;f.src=g;
-b.parentNode.insertBefore(f,b)})(document,"script","../lib/brytescore.js",window,"brytescore");
-brytescore("api_key","DEMO_API_KEY");
+b=a.getElementsByTagName(c)[0];f=a.createElement(c);f.async=1;f.src=g;b.parentNode.insertBefore(f,b)})
+(document,"script","../lib/brytescore.js",window,"brytescore");
+brytescore("setAPIKey","DEMO_API_KEY");
 brytescore("pageview");
 </script>
 <!-- End Brytescore -->
