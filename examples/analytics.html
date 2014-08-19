@@ -16,6 +16,8 @@
 	<script>
 		console.log( 'calling it here...' + elapsed() );
 		brytescore( 'is_loaded' );
+		brytescore( 'authenticate', 'someUserID', { "userName":'Ken Sanders', "userEmail":'ken@brytecore.com' } );
+		brytescore( 'pageview', { "campaign":"some_campaign", "campaignMedium":"some_campaignMedium", "campaignSource":'some_campaignSource' } );
 		brytescore( "track", "fakeEvent", { "data1": "some_data1", "data2": "some_data2" } );
 		console.log( brytescore.q );
 	</script>
