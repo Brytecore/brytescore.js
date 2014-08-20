@@ -16,14 +16,23 @@
 	<script>
 		console.log( 'calling it here...' + elapsed() );
 		brytescore( 'is_loaded' );
-		brytescore( 'authenticate', 'someUserID', { "userName":'Ken Sanders', "userEmail":'ken@brytecore.com' } );
-		brytescore( 'pageview', { "campaign":"some_campaign", "campaignMedium":"some_campaignMedium", "campaignSource":'some_campaignSource' } );
+
 		brytescore( "track", "fakeEvent", { "data1": "some_data1", "data2": "some_data2" } );
 		console.log( brytescore.q );
+
+		function Authenticate(){
+			var userName = document.getElementById( 'userName' ).value;
+			var userEmail = document.getElementById( 'userEmail' ).value
+			brytescore( 'authenticate', 'someUserID', { "userName": userName, "userEmail": userEmail } );
+		};
 	</script>
 </head>
 <body>
 	<h1>Brytescore Analytics Example</h1>
-
+<form>
+	<input type="text" id="userName" runat="server" placeholder="User Name" />
+	<input type="text" id="userEmail" runat="server" placeholder="User Email"/>
+	<input type="submit" id="btnSubmit" runat="'server" onclick="Authenticate(); return false;"
+</form>
 </body>
 </html>
