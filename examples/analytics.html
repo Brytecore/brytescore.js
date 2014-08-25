@@ -10,15 +10,15 @@
 			diff += 'ms';
 			return diff;
 		}
-		console.log( 'Loading snippet...' + elapsed() );
+		//console.log( 'Loading snippet...' + elapsed() );
 	</script>
 	<script src="js/snippet.js"></script>
 	<script>
-		console.log( 'calling it here...' + elapsed() );
+		//console.log( 'calling it here...' + elapsed() );
 		brytescore( 'is_loaded' );
 
 		brytescore( "track", "fakeEvent", { "data1": "some_data1", "data2": "some_data2" } );
-		console.log( brytescore.q );
+		//console.log( brytescore.q );
 		brytescore( 'realestate.viewed_listing', {
 					"price": 123456,
 					"mls_id": "string",
@@ -31,12 +31,17 @@
 					"longitude": "string"
 					}
 		);
-		brytescore( 'load', 'https://raw.githubusercontent.com/Brytecore/brytescore-cdn/master/packages/realestate/package.json?token=7500928__eyJzY29wZSI6IlJhd0Jsb2I6QnJ5dGVjb3JlL2JyeXRlc2NvcmUtY2RuL21hc3Rlci9wYWNrYWdlcy9yZWFsZXN0YXRlL3BhY2thZ2UuanNvbiIsImV4cGlyZXMiOjE0MDkxNjE3NzF9--6a14d154916072908cb1e83b0238334831ff2313' );
+		brytescore( 'load', 'http://cdn.brytescore.local/packages/realestate/package.json' );
+		//brytescore( 'load', 'http://cdn.brytescore.local/brytescore.js/brytescore.js' );
 
 		function Authenticate(){
 			var userName = document.getElementById( 'userName' ).value;
 			var userEmail = document.getElementById( 'userEmail' ).value;
 			brytescore( 'authenticate', 'someUserID', { "userName": userName, "userEmail": userEmail } );
+		}
+
+		function KillHeartbeat() {
+			brytescore( 'killHeartbeat' );
 		}
 	</script>
 </head>
@@ -45,7 +50,12 @@
 <form>
 	<input type="text" id="userName"  placeholder="User Name" />
 	<input type="text" id="userEmail"  placeholder="User Email"/>
-	<input type="submit" id="btnSubmit" onclick="Authenticate(); return false;"/>
+	<input type="submit" id="btnSubmit" value="Authenticate User" onclick="Authenticate(); return false;"/>
+
+	</br>
+	</br>
+	</br>
+	<input type="submit" id="btnKillHeartbeat" value="Stop Heartbeat" onclick="KillHeartbeat(); return false;" />
 </form>
 </body>
 </html>
