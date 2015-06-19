@@ -28,7 +28,7 @@ module.exports = function( grunt ) {
 		watch: {
 			js: {
 				files: ["lib/**/*.js"],
-				tasks: ["build-js"]
+				tasks: ["build"]
 			}
 		}
 	});

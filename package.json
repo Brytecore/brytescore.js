@@ -25,6 +25,7 @@
 		"mocha": "1.21.x"
 	},
 	"scripts": {
+		"dev": "grunt build && grunt watch",
 		"build": "grunt build",
 		"test": "npm -s run-script lint && npm -s run-script browsertest",
 		"lint": "eslint lib",
