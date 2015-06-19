@@ -1,7 +1,7 @@
 {
 	"name": "brytescore.js",
 	"author": "Brytecore <info@brytecore.com>",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"license": "MIT",
 	"description": "The javascript library for integrating the Brytescore API.",
 	"keywords": [
@@ -9,14 +9,24 @@
 		"brytescore.js",
 		"brytecore"
 	],
-	"repository": "https://github.com/Brytecore/brytescore.js.git",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Brytecore/brytescore.js.git"
+	},
 	"main": "lib/brytescore.js",
 	"dependencies": {},
 	"devDependencies": {
-		"mocha": "1.21.x",
-		"eslint": "0.7.x"
+		"eslint": "0.7.x",
+		"grunt": "~0.4.5",
+		"grunt-contrib-concat": "~0.5.1",
+		"grunt-contrib-uglify": "~0.8.0",
+		"grunt-contrib-watch": "~0.6.1",
+		"matchdep": "~0.3.0",
+		"mocha": "1.21.x"
 	},
 	"scripts": {
+		"dev": "grunt build && grunt watch",
+		"build": "grunt build",
 		"test": "npm -s run-script lint && npm -s run-script browsertest",
 		"lint": "eslint lib",
 		"browsertest": "mocha test/test.js"

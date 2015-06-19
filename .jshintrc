@@ -1,0 +1,5 @@
+{
+	"predef": [ "brytescore" ],
+	"sub": true,
+    "loopfunc": true
+}

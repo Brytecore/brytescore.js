@@ -12,14 +12,15 @@ API Key.
 ```
 <!-- Brytescore -->
 <script>
-window.brtscr = window.brtscr || [];
-(function(b,r,y,t,e){t=b.createElement(r);e=b.getElementsByTagName(r)[0];
-t.async=1;t.src=y;e.parentNode.insertBefore(t,e)
-})(document,'script','//localhost:9090/brytescore.js');
+(function(a,c,g,e,d,f,b){e[d]=e[d]||function(){(e[d].q=e[d].q||[]).push(arguments)};e[d].t=1*new Date();
+b=a.getElementsByTagName(c)[0];f=a.createElement(c);f.async=1;f.src=g;b.parentNode.insertBefore(f,b)})
+(document,"script","../lib/brytescore.js",window,"brytescore");
+brytescore("setAPIKey","DEMO_API_KEY");
+brytescore("pageview");
 </script>
 <!-- End Brytescore -->
 ```
 
 ## Documentation
 
-Full documentation on this library will be available soon at [www.brytescore.io](http://brytescore.io).
+Full documentation on this library will be available soon at [www.brytescore.com](http://brytescore.com).
