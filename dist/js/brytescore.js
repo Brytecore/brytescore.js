@@ -37,7 +37,7 @@
 		functionName,						// The function run by the client
 		listeners = [],						// Registered event listeners
 		xhr,								// XML HTTP Request object
-		url = 'http://api.brytecore.net',	// Path to the API
+		url = 'https://api.brytescore.com',	// Path to the API
 	//url = 'http://localhost:8080',
 		i,									// Counter
 		oneYear = 31536000000,				// One year, in milliseconds
