@@ -12,7 +12,8 @@ module.exports = function( grunt ) {
 						" */\n"
 				},
 				src: [
-					"lib/**/*.js"
+					//"lib/**/*.js"
+					"lib/brytescore.js"
 				], dest: "dist/js/brytescore.js"
 			}
 		},
