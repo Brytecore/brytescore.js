@@ -326,9 +326,9 @@
 	// start a pageView
 	window.brytescore.pageview = function ( data ) {
 		totalPageViewTime = 0;
-		var newURL = window.location.protocol + '//' + window.location.host + '/' + window.location.pathname;
+		//var newURL = window.location.protocol + '//' + window.location.host +  window.location.pathname;
 		pageViewId = brytescore.generateUUID();
-		data.pageUrl = newURL;
+		data.pageUrl = window.location.href;
 		data.pageTitle = document.title;
 		data.referrer = document.referrer;
 		brytescore.track( pageViewEventName, 'Viewed a Page', data );
