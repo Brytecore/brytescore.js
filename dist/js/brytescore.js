@@ -1,6 +1,9 @@
 /*! Brytescore JavaScript library v0.2.0
  *  Copyright 2015 Brytecore, LLC
  */
+/*! Brytescore JavaScript library v0.2.0
+ *  Copyright 2015 Brytecore, LLC
+ */
 /* Brytecore library */
 
 ( function ( window, undefined ) {
@@ -38,6 +41,7 @@
 		listeners = [],						// Registered event listeners
 		xhr,								// XML HTTP Request object
 		url = 'https://api.brytescore.com',	// Path to the API
+		httpURL = 'http://api.brytescore.com',
 	//url = 'http://localhost:8080',
 		i,									// Counter
 		oneYear = 31536000000,				// One year, in milliseconds
@@ -80,8 +84,8 @@
 		var ca = document.cookie.split( ';' );
 		for ( var i = 0; i < ca.length; i++ ) {
 			var c = ca[i];
-			while ( ' ' === c.charAt(0) ) {
-				c = c.substring(1);
+			while ( ' ' === c.charAt( 0 ) ) {
+				c = c.substring( 1 );
 			}
 			if ( c.indexOf( name ) !== -1 ) {
 				return c.substring( name.length, c.length );
@@ -147,8 +151,8 @@
 		functionName = args.shift();
 		//console.log( functionName );
 		//Package functionNames will show as namespace.functionName
-		if ( 0 < functionName.indexOf('.') ) {
-			var arr = functionName.split('.');
+		if ( 0 < functionName.indexOf( '.' ) ) {
+			var arr = functionName.split( '.' );
 			var namespace = arr[0];
 			var prop = arr[1];
 			//check if the namesapce is an object if it is not the package has not been loaded yet
@@ -473,15 +477,22 @@
 		if ( 'withCredentials' in xhr ) {
 			// XHR for Chrome/Firefox/Opera/Safari.
 			xhr.open( method, url, true );
+			xhr.setRequestHeader( 'Content-Type', 'application/json' );
 		} else if ( 'undefined' !== typeof XDomainRequest ) {
 			// XDomainRequest for IE.
-			xhr = new XDomainRequest();
-			xhr.open(method, url);
+			if ( window.navigator.userAgent.match( /MSIE [6-9]/ ) ) {
+				url = url.replace( /^http(?:s)?\:/, window.location.protocol );
+				xhr = new XDomainRequest();
+				xhr.open( method, url );
+			} else {
+				xhr = new XDomainRequest();
+				xhr.open( method, url );
+				xhr.setRequestHeader( 'Content-Type', 'application/json' );
+			}
 		} else {
 			// CORS not supported.
 			xhr = null;
 		}
-		xhr.setRequestHeader( 'Content-Type', 'application/json' );
 		return xhr;
 	}
 
@@ -493,7 +504,7 @@
 		var response = xhr.responseText;
 		if ( response && '' !== response ) {
 
-			response = JSON.parse( response ); // TODO: Add backwards support for IE7- (json-sans-eval?)
+			response = JSON.parse( response );
 
 			if ( response && response.hasOwnProperty( 'code' ) ) {
 				switch ( response.code.toLowerCase() ) {
@@ -535,7 +546,7 @@
 			//check for killed session cookie
 			if ( true === sessionTimeout ) {
 				window.brytescore.updateCookies();
-				window.brytescore.pageview({});
+				window.brytescore.pageview( {} );
 			}
 			//clears the timer if set
 			clearInterval( inactivityID );
@@ -543,9 +554,9 @@
 
 			//start a timer that will check every 5 minutes for activity.
 			//at the end of 5 minutes event listeners will be added to the dom.
-			inactivityID = window.setInterval(function () {
+			inactivityID = window.setInterval( function () {
 				addEventListeners();
-			}, 300000);
+			}, 300000 );
 		}
 	};
 
@@ -596,7 +607,7 @@
 	 **/
 	var lut = [];
 	for ( i = 0; 256 > i; i++ ) {
-		lut[i] = ( (16 > i) ? '0' : '' ) + (i).toString(16);
+		lut[i] = ( (16 > i) ? '0' : '' ) + (i).toString( 16 );
 	}
 	window.brytescore.generateUUID = function () {
 		var d0 = Math.random() * 0xffffffff | 0;
@@ -666,7 +677,11 @@
 			//only send event if cookie was created for first time.
 			if ( null === sc || true === sessionTimeout ) {
 				sessionTimeout = false;
-				brytescore.track( 'session_start', "started new session", {'sessionId': sessionId,'browserString': browserString,'anonymousId': anonymousId	} );
+				brytescore.track( 'session_start', "started new session", {
+					'sessionId': sessionId,
+					'browserString': browserString,
+					'anonymousId': anonymousId
+				} );
 			}
 		}
 
