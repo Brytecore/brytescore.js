@@ -237,10 +237,13 @@
 			cookieData,
 			date;
 
-		userId = userID;
 		if ( null !== bc ) {
 			values = JSON.parse( decodeURIComponent( bc ) );
-			anonymousId = values.aid;
+			if ( values.uid != '' && values.uid != userID ) {
+				changeLoggedInUser()
+			} else {
+				anonymousId = values.aid;
+			}
 		} else {
 			anonymousId = brytescore.generateUUID();
 		}
@@ -527,6 +530,37 @@
 				}
 			}
 		}
+	}
+
+	function changeLoggedInUser() {
+		//if different userID than the one stored in the cookie, kill the session and write 2 new cookies
+		//with new anonID, sessionID, pageviewID
+		killSession();
+		userId = userID;
+		anonymousId = brytescore.generateUUID();
+		sessionId = brytescore.generateUUID();
+		var browserString = navigator.userAgent;
+		sessionTimeout = false;
+
+		//update cookie so the correct user is pulled.
+		var cookieData = JSON.stringify( {
+			'aid': anonymousId,
+			'uid': userID
+		} );
+
+		var date = new Date();
+		date.setTime( date.getTime() + oneYear );
+
+		writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
+
+		brytescore.track( 'session_start', "started new session", {
+			'sessionId': sessionId,
+			'browserString': browserString,
+			'anonymousId': anonymousId
+		} );
+
+		//page view will update session cookie no need to write one.
+		window.brytescore.pageview( {} );
 	}
 
 	function killSession() {
