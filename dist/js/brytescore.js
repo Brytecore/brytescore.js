@@ -1,9 +1,6 @@
 /*! Brytescore JavaScript library v0.2.0
  *  Copyright 2015 Brytecore, LLC
  */
-/*! Brytescore JavaScript library v0.2.0
- *  Copyright 2015 Brytecore, LLC
- */
 /* Brytecore library */
 
 ( function ( window, undefined ) {
