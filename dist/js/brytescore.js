@@ -49,6 +49,7 @@
 		pageViewId,							// Brytescore page view id
 		heartBeatEventName = 'heartBeat',
 		pageViewEventName = 'pageView',
+		startHeartBeatTime = 0,
 		heartBeatInterval = 15000,
 		totalPageViewTime = 0,
 		heartbeatID,                        // the id of the heartbeat timer in case it needs to be stopped
@@ -236,8 +237,8 @@
 
 		if ( null !== bc ) {
 			values = JSON.parse( decodeURIComponent( bc ) );
-			if ( values.uid != '' && values.uid != userID ) {
-				changeLoggedInUser()
+			if ( values.uid !== '' && values.uid != userID ) {
+				changeLoggedInUser();
 			} else {
 				anonymousId = values.aid;
 			}
@@ -353,7 +354,19 @@
 		//send the first heartbeat and start the timer
 		brytescore.heartBeat();
 		heartbeatID = window.setInterval( function () {
-			brytescore.heartBeat();
+			var now = new Date().getTime();
+			//check if heartbeat should be dead?  Mac users when they shut the lid and reopen heartbeat continues where left off.
+			if( startHeartBeatTime === 0 || now - startHeartBeatTime < 1800000 ) {
+				startHeartBeatTime = new Date().getTime();
+				brytescore.heartBeat();
+			} else {
+				//Session should be dead.  KillSession kills cookie
+				killSession();
+				//write new session cookie
+				window.brytescore.updateCookies();
+				//start a pageview which starts new heartbeat
+				window.brytescore.pageview( {} );
+			}
 		}, heartBeatInterval );
 	};
 
@@ -396,7 +409,7 @@
 				//get the namespace of the package
 				var namespace = json.namespace;
 				// get an object of global scoped objects for required and optional parameters for the function
-				var jsonGlobals = json.globals;
+				//var jsonGlobals = json.globals;
 				//setup the namespace object so we can add functions to it
 				window.brytescore[namespace] = {};
 				//loop through each Event in the object and create a function for each event.
