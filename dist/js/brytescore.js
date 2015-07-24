@@ -1,7 +1,7 @@
-/*! Brytescore JavaScript library v0.2.0
+/*! Brytescore JavaScript library v0.3.0
  *  Copyright 2015 Brytecore, LLC
  */
-/* Brytecore library */
+
 
 ( function ( window, undefined ) {
 	'use strict';
@@ -38,8 +38,6 @@
 		listeners = [],						// Registered event listeners
 		xhr,								// XML HTTP Request object
 		url = 'https://api.brytescore.com',	// Path to the API
-		httpURL = 'http://api.brytescore.com',
-	//url = 'http://localhost:8080',
 		i,									// Counter
 		oneYear = 31536000000,				// One year, in milliseconds
 		APIKey,                             // Brytescore API Key
@@ -57,7 +55,10 @@
 		inactivityLogoutID,                 // the id for the timer that will close session and all that.
 		eventListenerHandle,                //  the handle for the event listeners
 		oldHref = '',
-		sessionTimeout = false;             // boolean for whether the session is timed out or not.
+		sessionTimeout = false,             // boolean for whether the session is timed out or not.
+		library = 'javascript',
+		libraryVersion = '0.3.0',
+		schemaVersion = {};
 
 
 	/*** Private methods ***/
@@ -126,14 +127,14 @@
 	 * adding to .q array.
 	 */
 	window.brytescore = function () {
-		//Check to see if the url has changed via ajax if so kill old pageview and start a new one
+		//Check to see if the url has changed via ajax if so kill old pageView and start a new one
 		if ( '' === oldHref ) {
 			oldHref = location.href;
 		}
 		var newHref = location.href;
 		if ( newHref !== oldHref ) {
 			window.brytescore.killHeartbeat();
-			window.brytescore.pageview( {} );
+			window.brytescore.pageView( {} );
 			oldHref = newHref;
 		}
 		var args = [].slice.call( arguments ),
@@ -228,7 +229,8 @@
 	};
 
 	//Authentication function
-	window.brytescore.authenticate = function ( userID, data ) {
+	window.brytescore.authenticated = function ( data ) {
+		var userID = data.userAccount.id;
 		// Check persistent cookie
 		var bc = readCookie( 'brytescore_uu' ),
 			values,
@@ -256,7 +258,7 @@
 
 		writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 
-		brytescore.track( 'authenticate', 'Logged In', data );
+		brytescore.track( 'authenticated', 'Logged In', data );
 	};
 
 	window.brytescore.submittedForm = function ( data ) {
@@ -264,7 +266,8 @@
 	};
 
 	//Update any user information
-	window.brytescore.updateUserInfo = function ( userID, data ) {
+	window.brytescore.updatedUserInfo = function ( data ) {
+		var userID = data.userAccount.id;
 		if ( undefined === userId || userID !== userId ) {
 			var bc = readCookie( 'brytescore_uu' ),
 				values,
@@ -289,11 +292,12 @@
 
 			writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 		}
-		brytescore.track( 'updateUserInfo', 'Updated User Information', data );
+		brytescore.track( 'updatedUserInfo', 'Updated User Information', data );
 	};
 
 
-	window.brytescore.registerAccount = function ( userID, data ) {
+	window.brytescore.registeredAccount = function ( data ) {
+		var userID = data.userAccount.id;
 		if ( undefined === userId || userID !== userId ) {
 			var bc = readCookie( 'brytescore_uu' ),
 				values,
@@ -318,7 +322,7 @@
 
 			writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 		}
-		brytescore.track( 'registerAccount', 'Created a new account', data );
+		brytescore.track( 'registeredAccount', 'Created a new account', data );
 	};
 
 
@@ -329,7 +333,7 @@
 	};
 
 	// start a pageView
-	window.brytescore.pageview = function ( data ) {
+	window.brytescore.pageView = function ( data ) {
 		totalPageViewTime = 0;
 		//var newURL = window.location.protocol + '//' + window.location.host +  window.location.pathname;
 		pageViewId = brytescore.generateUUID();
@@ -339,10 +343,10 @@
 		brytescore.track( pageViewEventName, 'Viewed a Page', data );
 
 		//update session cookie with new expiration date because of FF and Chrome issue on mac where they don't expire session cookies
-		var browserString = navigator.userAgent;
+		var browserUA = navigator.userAgent;
 		data = JSON.stringify( {
 			'sid': sessionId,
-			'brw': browserString,
+			'brw': browserUA,
 			'aid': anonymousId
 		} );
 
@@ -356,16 +360,17 @@
 		heartbeatID = window.setInterval( function () {
 			var now = new Date().getTime();
 			//check if heartbeat should be dead?  Mac users when they shut the lid and reopen heartbeat continues where left off.
-			if( startHeartBeatTime === 0 || now - startHeartBeatTime < 1800000 ) {
+			if ( startHeartBeatTime === 0 || now - startHeartBeatTime < 1800000 ) {
 				startHeartBeatTime = new Date().getTime();
 				brytescore.heartBeat();
 			} else {
+				startHeartBeatTime = 0;
 				//Session should be dead.  KillSession kills cookie
 				killSession();
 				//write new session cookie
 				window.brytescore.updateCookies();
-				//start a pageview which starts new heartbeat
-				window.brytescore.pageview( {} );
+				//start a pageView which starts new heartbeat
+				window.brytescore.pageView( {} );
 			}
 		}, heartBeatInterval );
 	};
@@ -408,6 +413,8 @@
 				var jsonEvents = json.events;
 				//get the namespace of the package
 				var namespace = json.namespace;
+				var version = json.version;
+				schemaVersion[namespace] = version;
 				// get an object of global scoped objects for required and optional parameters for the function
 				//var jsonGlobals = json.globals;
 				//setup the namespace object so we can add functions to it
@@ -472,6 +479,9 @@
 				'userId': userId,
 				'pageViewId': pageViewId,
 				'sessionId': sessionId,
+				'library': library,
+				'libraryVersion': libraryVersion,
+				'schemaVersion': schemaVersion[eventName.substring( 0, eventName.indexOf( '.' ) )],
 				'data': data || {}
 			};
 
@@ -544,12 +554,12 @@
 
 	function changeLoggedInUser() {
 		//if different userID than the one stored in the cookie, kill the session and write 2 new cookies
-		//with new anonID, sessionID, pageviewID
+		//with new anonID, sessionID, pageViewID
 		killSession();
 		userId = userID;
 		anonymousId = brytescore.generateUUID();
 		sessionId = brytescore.generateUUID();
-		var browserString = navigator.userAgent;
+		var browserUA = navigator.userAgent;
 		sessionTimeout = false;
 
 		//update cookie so the correct user is pulled.
@@ -563,14 +573,14 @@
 
 		writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 
-		brytescore.track( 'session_start', "started new session", {
+		brytescore.track( 'sessionStarted', "started new session", {
 			'sessionId': sessionId,
-			'browserString': browserString,
+			'browserUA': browserUA,
 			'anonymousId': anonymousId
 		} );
 
 		//page view will update session cookie no need to write one.
-		window.brytescore.pageview( {} );
+		window.brytescore.pageView( {} );
 	}
 
 	function killSession() {
@@ -580,7 +590,7 @@
 		//clear session variables
 		sessionId = undefined;
 		sessionTimeout = true;
-		//reset pageviewIDs
+		//reset pageViewIDs
 		pageViewId = undefined;
 	}
 
@@ -593,7 +603,7 @@
 			//check for killed session cookie
 			if ( true === sessionTimeout ) {
 				window.brytescore.updateCookies();
-				window.brytescore.pageview( {} );
+				window.brytescore.pageView( {} );
 			}
 			//clears the timer if set
 			clearInterval( inactivityID );
@@ -677,7 +687,7 @@
 			values,
 			data,
 			date,
-			browserString;
+			browserUA;
 
 		//console.log( readCookie( 'brytescore_uu' ) );
 		if ( null !== bc ) {
@@ -704,11 +714,11 @@
 			sessionId = values.sid;
 		} else {
 			sessionId = brytescore.generateUUID();
-			browserString = navigator.userAgent;
+			browserUA = navigator.userAgent;
 
 			data = JSON.stringify( {
 				'sid': sessionId,
-				'brw': browserString,
+				'brw': browserUA,
 				'aid': anonymousId
 			} );
 
@@ -719,14 +729,14 @@
 			//waiting to send created event until session data is created.
 			//only send event if cookie was created for first time.
 			if ( null === bc ) {
-				brytescore.track( 'brytescore_uuid_created', "New user id Created", {'anonymousId': anonymousId} );
+				brytescore.track( 'brytescoreUUIDCreated', "New user id Created", {'anonymousId': anonymousId} );
 			}
 			//only send event if cookie was created for first time.
 			if ( null === sc || true === sessionTimeout ) {
 				sessionTimeout = false;
-				brytescore.track( 'session_start', "started new session", {
+				brytescore.track( 'sessionStarted', "started new session", {
 					'sessionId': sessionId,
-					'browserString': browserString,
+					'browserUA': browserUA,
 					'anonymousId': anonymousId
 				} );
 			}
@@ -825,7 +835,7 @@
  begin_date
  anon_id
  browser_string
- 3. Log pageview
+ 3. Log pageView
  page_view_id - uuid
  host name
  campaign
@@ -858,3 +868,4 @@
 
 
  */
+
