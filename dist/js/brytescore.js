@@ -241,7 +241,7 @@
 		if ( null !== bc ) {
 			values = JSON.parse( decodeURIComponent( bc ) );
 			if ( values.uid !== '' && values.uid != userID ) {
-				changeLoggedInUser();
+				changeLoggedInUser( userID );
 			} else {
 				anonymousId = values.aid;
 			}
@@ -490,7 +490,7 @@
 				'sessionId': sessionId,
 				'library': library,
 				'libraryVersion': libraryVersion,
-				'schemaVersion': schemaVersion[ eventName.substring( 0,eventName.indexOf('.') ) ],
+				'schemaVersion': schemaVersion[eventName.substring( 0, eventName.indexOf( '.' ) )],
 				'data': data || {}
 			};
 
@@ -568,7 +568,7 @@
 		}
 	}
 
-	function changeLoggedInUser() {
+	function changeLoggedInUser( userID ) {
 		//if different userID than the one stored in the cookie, kill the session and write 2 new cookies
 		//with new anonID, sessionID, pageViewID
 		killSession();
