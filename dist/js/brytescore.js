@@ -58,7 +58,9 @@
 		sessionTimeout = false,             // boolean for whether the session is timed out or not.
 		library = 'javascript',
 		libraryVersion = '0.3.0',
-		schemaVersion = {};
+		schemaVersion = {},
+		devMode = false,
+		validationMode = false;
 
 
 	/*** Private methods ***/
@@ -332,6 +334,14 @@
 		APIKey = apiKey;
 	};
 
+	window.brytescore.devMode = function ( data ) {
+		devMode = data;
+	};
+
+	window.brytescore.validationMode = function ( data ) {
+		validationMode = data;
+	};
+
 	// start a pageView
 	window.brytescore.pageView = function ( data ) {
 		totalPageViewTime = 0;
@@ -485,6 +495,10 @@
 				'data': data || {}
 			};
 
+			if ( validationMode ) {
+				eventData.validationOnly = validationMode;
+			}
+
 			xhr.onload = serverResponse;
 			xhr.onerror = function ( err ) {
 				// TODO: Do something on error?
@@ -493,8 +507,11 @@
 				console.log( xhr.response );
 			};
 
-			//console.log( JSON.stringify( eventData ) );
-			xhr.send( JSON.stringify( eventData ) );
+			if ( devMode ) {
+				console.log( JSON.stringify( eventData ) );
+			} else {
+				xhr.send( JSON.stringify( eventData ) );
+			}
 		}
 	}
 
@@ -868,4 +885,3 @@
 
 
  */
-
