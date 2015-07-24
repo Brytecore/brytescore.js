@@ -2,7 +2,6 @@
  *  Copyright 2015 Brytecore, LLC
  */
 
-
 ( function ( window, undefined ) {
 	'use strict';
 
@@ -491,7 +490,7 @@
 				'sessionId': sessionId,
 				'library': library,
 				'libraryVersion': libraryVersion,
-				'schemaVersion': schemaVersion[eventName.substring( 0, eventName.indexOf( '.' ) )],
+				'schemaVersion': schemaVersion[ eventName.substring( 0,eventName.indexOf('.') ) ],
 				'data': data || {}
 			};
 
