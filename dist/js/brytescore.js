@@ -60,7 +60,7 @@
 		schemaVersion = {},
 		devMode = false,
 		validationMode = false;
-
+	schemaVersion['analytics'] = libraryVersion;
 
 	/*** Private methods ***/
 
@@ -490,7 +490,7 @@
 				'sessionId': sessionId,
 				'library': library,
 				'libraryVersion': libraryVersion,
-				'schemaVersion': schemaVersion[eventName.substring( 0, eventName.indexOf( '.' ) )],
+				'schemaVersion': ( eventName.indexOf( '.' ) === -1 ? schemaVersion['analytics'] : schemaVersion[eventName.substring( 0, eventName.indexOf( '.' ) )]),
 				'data': data || {}
 			};
 
