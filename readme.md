@@ -1,3 +1,5 @@
+<img src="http://brytecore.com/bc/products/dotcom/themes/big_data/images/brytescore-logo-@2x.png" width="400" height="81" alt="Brytescore API">
+
 # brytescore.js [![Build Status](https://travis-ci.org/Brytecore/brytescore.js.svg?branch=master)](https://travis-ci.org/Brytecore/brytescore.js)
 
 brytescore.js is the open-source library that connects your website with the Brytescore API. The
@@ -23,4 +25,4 @@ brytescore("pageview");
 
 ## Documentation
 
-Full documentation on this library will be available soon at [www.brytescore.com](http://brytescore.com).
+Full documentation on this library is available at [www.brytecore.com/docs/](http://www.brytecore.com/docs).
