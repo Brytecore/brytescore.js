@@ -9,7 +9,7 @@
 	generated_script.async = 1;
 	generated_script.src = script_source;
 	calling_script.parentNode.insertBefore( generated_script, calling_script );
-})( document, 'script', 'http://cdn.brytecore.net/brytescore.js/brytescore.min.js', window, 'brytescore' );
+})( document, 'script', 'https://cdn.brytecore.com/brytescore.js/brytescore.min.js', window, 'brytescore' );
 brytescore( 'setAPIKey', 'DEMO_API_KEY' );
-brytescore( 'pageview', { "campaign": "some_campaign", "campaignMedium": "some_campaignMedium", "campaignSource": 'some_campaignSource' } );
-brytescore( "load", "http://cdn.brytecore.net/packages/realestate/package.json" );
+brytescore( 'pageview', {} );
+brytescore( "load", "https://cdn.brytecore.com/packages/realestate/package.json" );
