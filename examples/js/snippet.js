@@ -11,5 +11,5 @@
 	calling_script.parentNode.insertBefore( generated_script, calling_script );
 })( document, 'script', 'https://cdn.brytecore.com/brytescore.js/brytescore.min.js', window, 'brytescore' );
 brytescore( 'setAPIKey', 'DEMO_API_KEY' );
-brytescore( 'pageview', {} );
+brytescore( 'pageView', {} );
 brytescore( "load", "https://cdn.brytecore.com/packages/realestate/package.json" );
