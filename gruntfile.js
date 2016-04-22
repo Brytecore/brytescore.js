@@ -19,7 +19,7 @@ module.exports = function( grunt ) {
 		},
 		uglify: {
 			options: {
-				preserveComments: "some"
+				preserveComments: /^!/
 			}, build: {
 				files: {
 					"dist/js/brytescore.min.js": ["dist/js/brytescore.js"]
