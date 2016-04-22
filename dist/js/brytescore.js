@@ -2,28 +2,37 @@
  *  Copyright 2015 Brytecore, LLC
  */
 
-( function ( window, undefined ) {
+( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
 	'use strict';
 
 	/*** Compatibility checks ***/
 
 	/**
 	 * Array.indexOf()
+	 * Add implementation for older browsers.
 	 */
 	if ( !Array.prototype.indexOf ) {
-		Array.prototype.indexOf = function ( find, i /*opt*/ ) {
-			if ( undefined === i ) {
-				i = 0;
-			} else if ( 0 > i ) {
-				i += this.length;
-				if ( 0 > i ) {
-					i = 0;
+		/**
+		 * Gets the index of the element in the array.
+		 *
+		 * @param {*} searchElement Element to locate in the array.
+		 * @param {number} [fromIndex] The index to start the search at.
+		 * @returns {number} The first index at which a given element can be found in the array, or -1 if it is not
+		 *      present.
+		 */
+		Array.prototype.indexOf = function ( searchElement, fromIndex ) { // eslint-disable-line no-extend-native
+			if ( undefined === fromIndex ) {
+				fromIndex = 0;
+			} else if ( 0 > fromIndex ) {
+				fromIndex += this.length;
+				if ( 0 > fromIndex ) {
+					fromIndex = 0;
 				}
 			}
 
-			for ( var n = this.length; i < n; i++ ) {
-				if ( i in this && this[i] === find ) {
-					return i;
+			for ( var n = this.length; fromIndex < n; fromIndex++ ) {
+				if ( fromIndex in this && this[fromIndex] === searchElement ) {
+					return fromIndex;
 				}
 			}
 			return -1;
@@ -32,18 +41,18 @@
 
 	/*** Private Variables ***/
 
-	var items = brytescore.q,				// Assign the queue to var, so it can be safely overridden
-		functionName,						// The function run by the client
-		listeners = [],						// Registered event listeners
-		xhr,								// XML HTTP Request object
-		url = 'https://api.brytescore.com',	// Path to the API
-		i,									// Counter
-		oneYear = 31536000000,				// One year, in milliseconds
+	var items = brytescore.q,               // Assign the queue to var, so it can be safely overridden
+		functionName,                       // The function run by the client
+		listeners = [],                     // Registered event listeners
+		xhr,                                // XML HTTP Request object
+		url = 'https://api.brytescore.com', // Path to the API
+		i,                                  // Counter
+		oneYear = 31536000000,              // One year, in milliseconds
 		APIKey,                             // Brytescore API Key
-		anonymousId,						// Brytescore uuid
-		userId,								// Client user id
-		sessionId,							// Brytescore session id
-		pageViewId,							// Brytescore page view id
+		anonymousId,                        // Brytescore uuid
+		userId,                             // Client user id
+		sessionId,                          // Brytescore session id
+		pageViewId,                         // Brytescore page view id
 		heartBeatEventName = 'heartBeat',
 		pageViewEventName = 'pageView',
 		startHeartBeatTime = 0,
@@ -57,37 +66,38 @@
 		sessionTimeout = false,             // boolean for whether the session is timed out or not.
 		library = 'javascript',
 		libraryVersion = '0.3.1',
-		schemaVersion = {},
+		schemaVersion = {
+			'analytics': libraryVersion
+		},
 		devMode = false,
 		validationMode = false;
-		schemaVersion['analytics'] = libraryVersion;
 
 	/*** Private methods ***/
 
 	/**
 	 * Handle an error.
 	 *
-	 * @param msg
+	 * @param {string} msg The error message.
 	 */
 	var returnError = function ( msg ) {
-		console.log( 'Brytescore error: ' + msg );
+		console.log( 'Brytescore error: ' + msg ); // eslint-disable-line no-console
 	};
 
 	/**
 	 * Get the data for a specific cookie.
 	 *
-	 * @param cname
-	 * @returns {*}
+	 * @param {string} name The cookie name.
+	 * @returns {null|string} The cookie data.
 	 */
-	var readCookie = function ( cname ) {
-		var name = cname + '=';
+	var readCookie = function ( name ) {
+		name += '=';
 		var ca = document.cookie.split( ';' );
 		for ( var i = 0; i < ca.length; i++ ) {
 			var c = ca[i];
 			while ( ' ' === c.charAt( 0 ) ) {
 				c = c.substring( 1 );
 			}
-			if ( c.indexOf( name ) !== -1 ) {
+			if ( -1 !== c.indexOf( name ) ) {
 				return c.substring( name.length, c.length );
 			}
 		}
@@ -97,9 +107,9 @@
 	/**
 	 * Write a cookie for this domain.
 	 *
-	 * @param name
-	 * @param data
-	 * @param expiry
+	 * @param {string} name The cookie name.
+	 * @param {string} data The data to write to the cookie.
+	 * @param [expiry] The cookie expiration time.
 	 */
 	var writeCookie = function ( name, data, expiry ) {
 //		var domain = window.location.hostname;
@@ -124,11 +134,10 @@
 	/*** Brytescore definition ***/
 
 	/**
-	 * Redefine the brytescore function to call public methods instead of
-	 * adding to .q array.
+	 * Redefine the brytescore function to call public methods instead of adding to .q array.
 	 */
 	window.brytescore = function () {
-		//Check to see if the url has changed via ajax if so kill old pageView and start a new one
+		// Check to see if the url has changed via ajax if so kill old pageView and start a new one
 		if ( '' === oldHref ) {
 			oldHref = location.href;
 		}
@@ -150,17 +159,17 @@
 		// Shift the function name off the array
 		functionName = args.shift();
 		//console.log( functionName );
-		//Package functionNames will show as namespace.functionName
+		// Package functionNames will show as namespace.functionName
 		if ( 0 < functionName.indexOf( '.' ) ) {
 			var arr = functionName.split( '.' );
 			var namespace = arr[0];
 			var prop = arr[1];
-			//check if the namesapce is an object if it is not the package has not been loaded yet
+			// Check if the namespace is an object if it is not the package has not been loaded yet
 			method = ( 'object' === typeof window.brytescore[namespace] )
 				? window.brytescore[namespace][prop]
 				: null;
 		} else {
-			//brytescore core function
+			// Brytescore core function
 			method = window.brytescore[functionName];
 		}
 
@@ -172,28 +181,26 @@
 			brytescore.q.push( [].slice.call( arguments ) );
 		}
 
-
-//        if( brytescore.q.length > 0 ) {
-//            setTimeout( brytescore.processBrytescoreQueue, 1 );
-//        }
-//        // if document already ready to go, schedule the ready function to run
-//        if ( document.readyState === "complete" ) {
-//            setTimeout( brytescore.processBrytescoreQueue, 1 );
-//        } else if ( !readyEventHandlersInstalled ) {
-//            // otherwise if we don't have event handlers installed, install them
-//            if ( document.addEventListener ) {
-//                // first choice is DOMContentLoaded event
-//                document.addEventListener( "DOMContentLoaded", brytescore.processBrytescoreQueue, false );
-//                // backup is window load event
-//                window.addEventListener( "load", brytescore.processBrytescoreQueue, false );
-//            } else {
-//                // must be IE
-//                document.attachEvent( "onreadystatechange", readyStateChange );
-//                window.attachEvent( "onload", brytescore.processBrytescoreQueue );
-//            }
-//            readyEventHandlersInstalled = true;
-//        }
-
+		//if ( 0 < brytescore.q.length ) {
+		//	setTimeout( brytescore.processBrytescoreQueue, 1 );
+		//}
+		//// If document already ready to go, schedule the ready function to run
+		//if ( 'complete' === document.readyState ) {
+		//	setTimeout( brytescore.processBrytescoreQueue, 1 );
+		//} else if ( !readyEventHandlersInstalled ) {
+		//	// Otherwise if we don't have event handlers installed, install them
+		//	if ( document.addEventListener ) {
+		//		// First choice is DOMContentLoaded event
+		//		document.addEventListener( 'DOMContentLoaded', brytescore.processBrytescoreQueue, false );
+		//		// Backup is window load event
+		//		window.addEventListener( 'load', brytescore.processBrytescoreQueue, false );
+		//	} else {
+		//		// Must be IE
+		//		document.attachEvent( 'onreadystatechange', readyStateChange );
+		//		window.attachEvent( 'onload', brytescore.processBrytescoreQueue );
+		//	}
+		//	readyEventHandlersInstalled = true;
+		//}
 	};
 
 	// Re-add the queue
@@ -201,35 +208,59 @@
 
 	/***** Event Emitter ****/
 
+	/**
+	 * Adds a listener to an event.
+	 *
+	 * @param {string} event The event name.
+	 * @param {function} callback The callback function.
+	 */
 	window.brytescore.on = function ( event, callback ) {
 		listeners.push( event, callback );
 	};
 
+	/**
+	 * The event emitter.
+	 *
+	 * @param {string} event The event name.
+	 * @param {*} args The event arguments.
+	 */
 	window.brytescore.emit = function ( event, args ) {
-
 	};
 
-	// Remove a single listener from an event
+	/**
+	 * Remove a single listener from an event.
+	 *
+	 * @param {string} event The event name.
+	 * @param {function} callback The callback function to remove.
+	 */
 	window.brytescore.removeListener = function ( event, callback ) {
-		var all_listeners = listeners;
-		for ( var i = 0; i < all_listeners.length; i++ ) {
-			if ( event === all_listeners[i][0] && callback === all_listeners[i][1] ) {
+		var allListeners = listeners;
+		for ( var i = 0; i < allListeners.length; i++ ) {
+			if ( event === allListeners[i][0] && callback === allListeners[i][1] ) {
 				listeners.splice( i, 1 );
 			}
 		}
 	};
 
-	// Remove all listeners from a single event
+	/**
+	 * Remove all listeners from a single event.
+	 *
+	 * @param {string} event The event name.
+	 */
 	window.brytescore.removeAllListeners = function ( event ) {
-		var all_listeners = listeners;
-		for ( var i = 0; i < all_listeners.length; i++ ) {
-			if ( event === all_listeners[i][0] ) {
+		var allListeners = listeners;
+		for ( var i = 0; i < allListeners.length; i++ ) {
+			if ( event === allListeners[i][0] ) {
 				listeners.splice( i, 1 );
 			}
 		}
 	};
 
-	//Authentication function
+	/**
+	 * Sends a user authentication event.
+	 *
+	 * @param {{}} data The authentication data.
+	 */
 	window.brytescore.authenticated = function ( data ) {
 		var userID = data.userAccount.id;
 		// Check persistent cookie
@@ -240,7 +271,7 @@
 
 		if ( null !== bc ) {
 			values = JSON.parse( decodeURIComponent( bc ) );
-			if ( values.uid !== '' && values.uid != userID ) {
+			if ( '' !== values.uid && values.uid != userID ) {
 				changeLoggedInUser( userID );
 			} else {
 				anonymousId = values.aid;
@@ -262,11 +293,20 @@
 		brytescore.track( 'authenticated', 'Logged In', data );
 	};
 
+	/**
+	 * Sends a submittedForm event.
+	 *
+	 * @param {{}} data The form data.
+	 */
 	window.brytescore.submittedForm = function ( data ) {
 		brytescore.track( 'submittedForm', 'Submitted a Form', data );
 	};
 
-	//Update any user information
+	/**
+	 * Updates a user's account information.
+	 *
+	 * @param {{}} data The account data.
+	 */
 	window.brytescore.updatedUserInfo = function ( data ) {
 		var userID = data.userAccount.id;
 		if ( undefined === userId || userID !== userId ) {
@@ -296,7 +336,11 @@
 		brytescore.track( 'updatedUserInfo', 'Updated User Information', data );
 	};
 
-
+	/**
+	 * Sends a new account registration event.
+	 *
+	 * @param {{}} data The registration data.
+	 */
 	window.brytescore.registeredAccount = function ( data ) {
 		var userID = data.userAccount.id;
 		if ( undefined === userId || userID !== userId ) {
@@ -327,21 +371,35 @@
 	};
 
 
-	// Set API Key function
+	/**
+	 * Sets the API key.
+	 *
+	 * @param {string} apiKey The API key.
+	 */
 	window.brytescore.setAPIKey = function ( apiKey ) {
 		//console.log("api Key set: " + apiKey );
 		APIKey = apiKey;
 	};
 
-	window.brytescore.devMode = function ( data ) {
-		devMode = data;
+	/**
+	 * Sets dev mode.
+	 * Logs events to the console instead of sending to the API.
+	 *
+	 * @param {boolean} enabled If true, then dev mode is enabled.
+	 */
+	window.brytescore.devMode = function ( enabled ) {
+		devMode = enabled;
 	};
 
 	window.brytescore.validationMode = function ( data ) {
 		validationMode = data;
 	};
 
-	// start a pageView
+	/**
+	 * Start a pageView.
+	 *
+	 * @param {{}} data The pageView data.
+	 */
 	window.brytescore.pageView = function ( data ) {
 		totalPageViewTime = 0;
 		//var newURL = window.location.protocol + '//' + window.location.host +  window.location.pathname;
@@ -351,7 +409,7 @@
 		data.referrer = document.referrer;
 		brytescore.track( pageViewEventName, 'Viewed a Page', data );
 
-		//update session cookie with new expiration date because of FF and Chrome issue on mac where they don't expire session cookies
+		// Update session cookie with new expiration date because of FF and Chrome issue on mac where they don't expire session cookies
 		var browserUA = navigator.userAgent;
 		data = JSON.stringify( {
 			'sid': sessionId,
@@ -363,82 +421,91 @@
 		date.setTime( date.getTime() + 1800000 );  //30 minutes
 		writeCookie( 'brytescore_session', data, date.toUTCString() );
 
-
-		//send the first heartbeat and start the timer
+		// Send the first heartbeat and start the timer
 		brytescore.heartBeat();
 		heartbeatID = window.setInterval( function () {
 			var now = new Date().getTime();
-			//check if heartbeat should be dead?  Mac users when they shut the lid and reopen heartbeat continues where left off.
-			if ( startHeartBeatTime === 0 || now - startHeartBeatTime < 1800000 ) {
+			// Check if heartbeat should be dead?  Mac users when they shut the lid and reopen heartbeat continues where left off.
+			if ( 0 === startHeartBeatTime || 1800000 > now - startHeartBeatTime ) {
 				startHeartBeatTime = new Date().getTime();
 				brytescore.heartBeat();
 			} else {
 				startHeartBeatTime = 0;
-				//Session should be dead.  KillSession kills cookie
+				// Session should be dead.  KillSession kills cookie
 				killSession();
-				//write new session cookie
+				// Write new session cookie
 				window.brytescore.updateCookies();
-				//start a pageView which starts new heartbeat
+				// Start a pageView which starts new heartbeat
 				window.brytescore.pageView( {} );
 			}
 		}, heartBeatInterval );
 	};
 
+	/**
+	 * Stops the heartbeat.
+	 */
 	window.brytescore.killHeartbeat = function () {
 		clearInterval( heartbeatID );
 	};
 
-
-	// Main track function
+	/**
+	 * Main track function
+	 *
+	 * @param {string} eventName The event name.
+	 * @param {string} eventDisplayName The event display name.
+	 * @param {{}} data The event data.
+	 */
 	window.brytescore.track = function ( eventName, eventDisplayName, data ) {
 		sendRequest( 'track', eventName, eventDisplayName, data );
 	};
 
+	/**
+	 * Sends a heartbeat event.
+	 */
 	window.brytescore.heartBeat = function () {
-		window.brytescore.track( heartBeatEventName, 'Heartbeat', {elapsedTime: totalPageViewTime} );
+		window.brytescore.track( heartBeatEventName, 'Heartbeat', { elapsedTime: totalPageViewTime } );
 		totalPageViewTime = totalPageViewTime + ( heartBeatInterval / 1000 );
 	};
 
 	/**
 	 * Function to load json packages.
 	 *
-	 * @param url
+	 * @param {string} url The URL of the package.
 	 */
 	window.brytescore.load = function ( url ) {
 		//var realestate = '{"name":"Brytecore Real Estate","namespace":"realestate","author":"Brytecore <info@brytecore.com>","version":"0.0.1","description":"Real estate visitor behavior and listing searches.","url":"","globals":{"listing":{"required":{"price":"number","mls_id":"string"},"optional":{"street_address":"string","street_address_2":"string","city":"string","state_province":"string","postal_code":"string","latitude":"string","longitude":"string"}}},"events":{"viewed_listing":{"display_name":"Viewed a listing","globals":["listing"]},"printed_driving_directions":{"display_name":"Printed driving directions","globals":["listing"]},"requested_showing":{"display_name":"Requested a showing","globals":["listing"]},"listing_impression":{"display_name":"Saw listing in search results","required":{"price":"number","mls_id":"string"},"optional":{"street_address":"string","street_address_2":"string","city":"string","state_province":"string","postal_code":"string","latitude":"string","longitude":"string"}}},"aggregates":{"average_listing_price":{"type":"average","aggregate_key":"mls_id","event":"viewed_listing","data_key":"price","scopes":["site","user","api_key"]},"listing_impressions":{"type":"count","event":"listing_impression","unique_key":"mls_id","scopes":["site","user","api_key"]},"median_listing_price":{"type":"median","aggregate_key":"mls_id","event":"viewed_listing","data_key":"price","scopes":["site","user","api_key"]}},"indicators":{"lookie-lou":{"type":"event","display_name":"Lookie-lou","event":{"name":"viewed_listing"},"weight":20},"driver":{"type":"repetition","display_name":"This guy likes to drive","events":[{"name": "printed_driving_directions","repititions": 5},{"name": "requested_showing","repetitions": 1}],"timeframe":"3d","weight":40},"go-getter":{"type":"sequence","display_name":"Im on the way!","events":[{"name": "viewed_listing","parameters": {"price": ["gte","400000"]}},{"name": "requested_showing"},{"name": "printed_driving_directions"}],"timeframe":"1d","weight":60}},"dependencies":{}}';
 		//var json = JSON.parse( realestate );
 
-		//AJAX request for the package
-		var AJAX_req = createCORSRequest( 'GET', url );
+		// AJAX request for the package
+		var AjaxReq = createCORSRequest( 'GET', url );
 
-		//AJAX_req.onreadystatechange = function () {
-		//	if ( 4 === AJAX_req.readyState && 200 === AJAX_req.status ) {
-		AJAX_req.onload = function () {
-			var state = AJAX_req.readyState;
-			if ( (!state || /loaded|complete/.test( state )) || ( 4 === AJAX_req.readyState && 200 === AJAX_req.status ) ) {
+		//AjaxReq.onreadystatechange = function () {
+		//	if ( 4 === AjaxReq.readyState && 200 === AJAX_req.status ) {
+		AjaxReq.onload = function () {
+			var state = AjaxReq.readyState;
+			if ( (!state || /loaded|complete/.test( state )) || ( 4 === AjaxReq.readyState && 200 === AjaxReq.status ) ) {
 
-				var json = JSON.parse( AJAX_req.responseText );
-				//get just the events object of the package
+				var json = JSON.parse( AjaxReq.responseText );
+				// Get just the events object of the package
 				var jsonEvents = json.events;
-				//get the namespace of the package
+				// Get the namespace of the package
 				var namespace = json.namespace;
-				var version = json.version;
-				schemaVersion[namespace] = version;
-				// get an object of global scoped objects for required and optional parameters for the function
+				schemaVersion[namespace] = json.version;
+				// Get an object of global scoped objects for required and optional parameters for the function
 				//var jsonGlobals = json.globals;
-				//setup the namespace object so we can add functions to it
+				// Setup the namespace object so we can add functions to it
 				window.brytescore[namespace] = {};
-				//loop through each Event in the object and create a function for each event.
-				//window.brytescore.factory is a closure so that prop and namespace can be passed in and keep its value at the time of passing it in
+				// Loop through each Event in the object and create a function for each event.
+				// window.brytescore.factory is a closure so that prop and namespace can be passed in and keep its value at the time of passing it in
 				for ( var prop in jsonEvents ) {
 					window.brytescore.factory = function ( eventName, packageNamespace, displayName ) {
 						return function () {
 							return window.brytescore.track( packageNamespace + '.' + eventName, displayName, arguments[0] );
 						};
 					};
-					window.brytescore[namespace][prop] = window.brytescore.factory( prop, namespace, jsonEvents[prop]["displayName"] );
+					window.brytescore[namespace][prop] = window.brytescore.factory( prop, namespace, jsonEvents[prop].displayName );
 
-					//loop through the queue and process the items for this function and remove them from the queue
+					// Loop through the queue and process the items for this function and remove them from the queue
 					for ( var i = 0; i < window.brytescore.q.length; i++ ) {
 						if ( namespace + '.' + prop === window.brytescore.q[i][0] ) {
 							window.brytescore[namespace][prop]( window.brytescore.q[i][1] );
@@ -448,27 +515,28 @@
 				}
 			}
 		};
-		AJAX_req.send();
+		AjaxReq.send();
 		window.brytescore.q = [];
 	};
 
-//    window.brytescore.processBrytescoreQueue = function() {
-//        //loop through the queue and process the items for this function and remove them from the queue
-//            for ( var i = 0; i < window.brytescore.q.length; i++ ) {
-//                if(i=49){
-//                    alert( 'function' === typeof window['brytescore'][window.brytescore.q[i][0]] );
-//                    alert(i);
-//                }
-//                if ( 'function' === typeof window['brytescore'][window.brytescore.q[i][0]] ) {
-//                    window['brytescore'][window.brytescore.q[i][0]]( window.brytescore.q[i][1] );
-//                    window.brytescore.q.splice( i, 1 );
-//                }
-//            }
-//    };
+	//window.brytescore.processBrytescoreQueue = function() {
+	//	// Loop through the queue and process the items for this function and remove them from the queue
+	//	for ( var i = 0; i < window.brytescore.q.length; i++ ) {
+	//			if ( 49 === i ) {
+	//				alert( 'function' === typeof window.brytescore[window.brytescore.q[i][0]] );
+	//				alert(i);
+	//			}
+	//		if ( 'function' === typeof window.brytescore[window.brytescore.q[i][0]] ) {
+	//			window.brytescore[window.brytescore.q[i][0]]( window.brytescore.q[i][1] );
+	//			window.brytescore.q.splice( i, 1 );
+	//		}
+	//	}
+	//};
 
-	//XMLHttpRequest functions
+	/*** XMLHttpRequest functions ***/
+
 	/**
-	 * Wrapper Function for making CORS call to the API
+	 * Wrapper Function for making CORS call to the API.
 	 *
 	 * @param {string} path
 	 * @param {string} eventName
@@ -490,7 +558,7 @@
 				'sessionId': sessionId,
 				'library': library,
 				'libraryVersion': libraryVersion,
-				'schemaVersion': ( eventName.indexOf( '.' ) === -1 ? schemaVersion['analytics'] : schemaVersion[eventName.substring( 0, eventName.indexOf( '.' ) )]),
+				'schemaVersion': ( -1 === eventName.indexOf( '.' ) ? schemaVersion.analytics : schemaVersion[eventName.substring( 0, eventName.indexOf( '.' ) )] ),
 				'data': data || {}
 			};
 
@@ -507,45 +575,51 @@
 			};
 
 			if ( devMode ) {
-				console.log( JSON.stringify( eventData ) );
+				console.log( JSON.stringify( eventData ) ); // eslint-disable-line no-console
 			} else {
 				xhr.send( JSON.stringify( eventData ) );
 			}
 		}
 	}
 
+	/**
+	 * Performs a CORS request.
+	 *
+	 * @param {string} method The method type.
+	 * @param {string} url The URL to send the request to.
+	 * @returns {XMLHttpRequest}
+	 */
 	function createCORSRequest( method, url ) {
-		var xhr = new XMLHttpRequest();
-		if ( 'withCredentials' in xhr ) {
+		var corsXhr = new XMLHttpRequest();
+		if ( 'withCredentials' in corsXhr ) {
 			// XHR for Chrome/Firefox/Opera/Safari.
-			xhr.open( method, url, true );
-			xhr.setRequestHeader( 'Content-Type', 'application/json' );
+			corsXhr.open( method, url, true );
+			corsXhr.setRequestHeader( 'Content-Type', 'application/json' );
 		} else if ( 'undefined' !== typeof XDomainRequest ) {
 			// XDomainRequest for IE.
 			if ( window.navigator.userAgent.match( /MSIE [6-9]/ ) ) {
 				url = url.replace( /^http(?:s)?\:/, window.location.protocol );
-				xhr = new XDomainRequest();
-				xhr.open( method, url );
+				corsXhr = new XDomainRequest();
+				corsXhr.open( method, url );
 			} else {
-				xhr = new XDomainRequest();
-				xhr.open( method, url );
-				xhr.setRequestHeader( 'Content-Type', 'application/json' );
+				corsXhr = new XDomainRequest();
+				corsXhr.open( method, url );
+				corsXhr.setRequestHeader( 'Content-Type', 'application/json' );
 			}
 		} else {
 			// CORS not supported.
-			xhr = null;
+			corsXhr = null;
 		}
-		return xhr;
+		return corsXhr;
 	}
 
 
 	/**
-	 * The callback function that is called when the XMLHttpRequest is finished
+	 * The callback function that is called when the XMLHttpRequest is finished.
 	 */
 	function serverResponse() {
 		var response = xhr.responseText;
 		if ( response && '' !== response ) {
-
 			response = JSON.parse( response );
 
 			if ( response && response.hasOwnProperty( 'code' ) ) {
@@ -557,7 +631,7 @@
 						// TODO: Fire event
 						break;
 					case 'badrequesterror':
-						console.error( 'The request was not properly formatted.' );
+						returnError( 'The request was not properly formatted.' );
 						break;
 					default:
 						//console.log( response );
@@ -568,9 +642,14 @@
 		}
 	}
 
+	/**
+	 * Process a change in the logged in user.
+	 *
+	 * @param {string} userID The user ID.
+	 */
 	function changeLoggedInUser( userID ) {
-		//if different userID than the one stored in the cookie, kill the session and write 2 new cookies
-		//with new anonID, sessionID, pageViewID
+		// If different userID than the one stored in the cookie, kill the session and write 2 new cookies
+		// with new anonID, sessionID, pageViewID
 		killSession();
 		userId = userID;
 		anonymousId = brytescore.generateUUID();
@@ -578,7 +657,7 @@
 		var browserUA = navigator.userAgent;
 		sessionTimeout = false;
 
-		//update cookie so the correct user is pulled.
+		// Update cookie so the correct user is pulled.
 		var cookieData = JSON.stringify( {
 			'aid': anonymousId,
 			'uid': userID
@@ -589,50 +668,59 @@
 
 		writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 
-		brytescore.track( 'sessionStarted', "started new session", {
+		brytescore.track( 'sessionStarted', 'started new session', {
 			'sessionId': sessionId,
 			'browserUA': browserUA,
 			'anonymousId': anonymousId
 		} );
 
-		//page view will update session cookie no need to write one.
+		// Page view will update session cookie no need to write one.
 		window.brytescore.pageView( {} );
 	}
 
+	/**
+	 * Kills the session.
+	 */
 	function killSession() {
 		brytescore.killHeartbeat();
-		//delete session cookie
+		// Delete session cookie
 		writeCookie( 'brytescore_session', null, new Date( 1974, 9, 18 ) );
-		//clear session variables
+		// Clear session variables
 		sessionId = undefined;
 		sessionTimeout = true;
-		//reset pageViewIDs
+		// Reset pageViewIDs
 		pageViewId = undefined;
 	}
 
+	/**
+	 * Starts the activity timer.
+	 */
 	var startInactivityTimer = function () {
 		if ( 0 === inactivityID ) {
 			if ( undefined !== eventListenerHandle ) {
 				removeEventListeners();
 			}
 
-			//check for killed session cookie
+			// Check for killed session cookie
 			if ( true === sessionTimeout ) {
 				window.brytescore.updateCookies();
 				window.brytescore.pageView( {} );
 			}
-			//clears the timer if set
+			// Clears the timer if set
 			clearInterval( inactivityID );
 			clearTimeout( inactivityLogoutID );
 
-			//start a timer that will check every 5 minutes for activity.
-			//at the end of 5 minutes event listeners will be added to the dom.
+			// Start a timer that will check every 5 minutes for activity.
+			// At the end of 5 minutes event listeners will be added to the dom.
 			inactivityID = window.setInterval( function () {
 				addEventListeners();
 			}, 300000 );
 		}
 	};
 
+	/**
+	 * Remove event listeners.
+	 */
 	function removeEventListeners() {
 		if ( eventListenerHandle.removeListener ) {
 			eventListenerHandle.removeListener( 'mousemove', startInactivityTimer );
@@ -648,23 +736,26 @@
 		eventListenerHandle = undefined;
 	}
 
+	/**
+	 * Add event listeners.
+	 */
 	function addEventListeners() {
-		//clears the timer if set
+		// Clears the timer if set
 		clearInterval( inactivityID );
 		inactivityID = 0;
-		//start a timer that will fire in 25 minutes if no activity.
+		// Start a timer that will fire in 25 minutes if no activity.
 		inactivityLogoutID = setTimeout( function () {
 			killSession();
 		}, 1500000 );
 
 		//var lastMove = 0;
 		eventListenerHandle = window;
-		if ( eventListenerHandle.addEventListener ) {                    // For all major browsers, except IE 8 and earlier
+		if ( eventListenerHandle.addEventListener ) {       // For all major browsers, except IE 8 and earlier
 			eventListenerHandle.addEventListener( 'mousemove', startInactivityTimer );
 			eventListenerHandle.addEventListener( 'click', startInactivityTimer );
 			eventListenerHandle.addEventListener( 'scroll', startInactivityTimer );
 			eventListenerHandle.addEventListener( 'keyup', startInactivityTimer );
-		} else if ( eventListenerHandle.attachEvent ) {                  // For IE 8 and earlier versions
+		} else if ( eventListenerHandle.attachEvent ) {     // For IE 8 and earlier versions
 			eventListenerHandle.attachEvent( 'onmousemove', startInactivityTimer );
 			eventListenerHandle.attachEvent( 'onclick', startInactivityTimer );
 			eventListenerHandle.attachEvent( 'onscroll', startInactivityTimer );
@@ -742,15 +833,15 @@
 			date.setTime( date.getTime() + 1800000 );  //30 minutes
 			writeCookie( 'brytescore_session', data, date.toUTCString() );
 
-			//waiting to send created event until session data is created.
-			//only send event if cookie was created for first time.
+			// Waiting to send created event until session data is created.
+			// Only send event if cookie was created for first time.
 			if ( null === bc ) {
-				brytescore.track( 'brytescoreUUIDCreated', "New user id Created", {'anonymousId': anonymousId} );
+				brytescore.track( 'brytescoreUUIDCreated', 'New user id Created', { 'anonymousId': anonymousId } );
 			}
-			//only send event if cookie was created for first time.
+			// Only send event if cookie was created for first time.
 			if ( null === sc || true === sessionTimeout ) {
 				sessionTimeout = false;
-				brytescore.track( 'sessionStarted', "started new session", {
+				brytescore.track( 'sessionStarted', 'started new session', {
 					'sessionId': sessionId,
 					'browserUA': browserUA,
 					'anonymousId': anonymousId
@@ -760,23 +851,23 @@
 
 	};
 
-	/**
-	 * Retrieve a package from the API.
-	 *
-	 * @param package_name
-	 * @param callback
-	 */
-//	window.brytescore.load = function( package_name, callback ) {
+//	/**
+//	 * Retrieve a package from the API.
+//	 *
+//	 * @param {string} packageName The package name to retrieve.
+//	 * @param {function} callback The callback function.
+//	 */
+//	window.brytescore.load = function( packageName, callback ) {
 //
 //	};
 
 	/**
 	 * Check to see if a certain package has loaded.
 	 *
-	 * @param package_name
+	 * @param {string} packageName The package name to check.
 	 */
-	window.brytescore.is_loaded = function ( package_name ) {
-		console.log( 'is_loaded function called for package ' + package_name );
+	window.brytescore.is_loaded = function ( packageName ) {
+		console.log( 'is_loaded function called for package ' + packageName );
 	};
 
 	/**
@@ -798,7 +889,7 @@
 	 * Initialize the object.
 	 */
 	window.brytescore.init = function () {
-		//loop through the queue and process the setAPIKey and remove it from the queue
+		// Loop through the queue and process the setAPIKey and remove it from the queue
 		if ( 'undefined' === typeof APIKey ) {
 			for ( i = 0; i < items.length; i++ ) {
 				if ( 'setapikey' === items[i][0].toLowerCase() ) {
@@ -813,7 +904,12 @@
 		startInactivityTimer();
 	};
 
-	//function for loading dependet javascript files.
+	/**
+	 * Loads dependent JavaScript files.
+	 *
+	 * @param {string} src The JavaScript source URL.
+	 * @param {function} callback The callback function.
+	 */
 	function loadJS( src, callback ) {
 		var s = document.createElement( 'script' );
 		s.src = src;
@@ -828,8 +924,8 @@
 		document.getElementsByTagName( 'head' )[0].appendChild( s );
 	}
 
-	//check for JSON existence needed for ie 6&7
-	if ( typeof JSON !== 'object' ) {
+	// Check for JSON existence needed for IE 6 & 7
+	if ( 'object' !== typeof JSON ) {
 		loadJS( 'http://cdn.brytecore.net/brytescore.js/JSON3.min.js', function () {
 			brytescore.init();
 		} );
@@ -880,7 +976,5 @@
  brytescore.load( package )
 
  brytescore.isLoaded( package )
-
-
 
  */
