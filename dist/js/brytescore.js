@@ -1,4 +1,4 @@
-/*! Brytescore JavaScript library v0.3.0
+/*! Brytescore JavaScript library v0.3.1
  *  Copyright 2015 Brytecore, LLC
  */
 
@@ -56,11 +56,11 @@
 		oldHref = '',
 		sessionTimeout = false,             // boolean for whether the session is timed out or not.
 		library = 'javascript',
-		libraryVersion = '0.3.0',
+		libraryVersion = '0.3.1',
 		schemaVersion = {},
 		devMode = false,
 		validationMode = false;
-	schemaVersion['analytics'] = libraryVersion;
+		schemaVersion['analytics'] = libraryVersion;
 
 	/*** Private methods ***/
 
@@ -485,7 +485,7 @@
 				'hostName': location.hostname,
 				'apiKey': APIKey,
 				'anonymousId': anonymousId,
-				'userId': userId,
+				'userId': userId.toString(),
 				'pageViewId': pageViewId,
 				'sessionId': sessionId,
 				'library': library,
