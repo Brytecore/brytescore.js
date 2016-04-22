@@ -8,14 +8,15 @@
 		"XDomainRequest": true
 	},
 	"rules": {
-		"camelcase": 0,
-		"quotes": [1, "single", "avoid-escape"],
-		"no-console": 1,
-		"no-extend-native": 1,
-		"no-shadow": 1,
-		"no-shadow-restricted-names": 1,
-		"no-unused-vars": 1,
-		"no-use-before-define": [2, "nofunc"],
-		"yoda": [2, "always"]
+		"camelcase": "warn",
+		"eqeqeq": ["warn"],
+		"quotes": ["warn", "single", "avoid-escape"],
+		"no-console": "warn",
+		"no-extend-native": "warn",
+		"no-shadow": "warn",
+		"no-shadow-restricted-names": "warn",
+		"no-unused-vars": ["error", {"args": "none"}],
+		"no-use-before-define": ["error", "nofunc"],
+		"yoda": ["error", "always"]
 	}
 }
