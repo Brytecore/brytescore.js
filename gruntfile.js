@@ -8,7 +8,7 @@ module.exports = function( grunt ) {
 				options: {
 					banner:
 						"/*! Brytescore JavaScript library v<%= pkg.version %>\n" +
-						" *  Copyright 2015 Brytecore, LLC\n" +
+						" *  Copyright 2015-2016 Brytecore, LLC\n" +
 						" */\n"
 				},
 				src: [
@@ -17,9 +17,29 @@ module.exports = function( grunt ) {
 				], dest: "dist/js/brytescore.js"
 			}
 		},
+		replace: {
+			dist: {
+				options: {
+					patterns: [
+						{
+							match: "libraryVersion",
+							replacement: "<%= pkg.version %>"
+						}
+					]
+				},
+				files: [
+					{
+						expand: true,
+						flatten: true,
+						src: [ "dist/js/brytescore.js" ],
+						dest: 'dist/js/'
+					}
+				]
+			}
+		},
 		uglify: {
 			options: {
-				preserveComments: "some"
+				preserveComments: /^!/
 			}, build: {
 				files: {
 					"dist/js/brytescore.min.js": ["dist/js/brytescore.js"]
@@ -35,5 +55,5 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerTask( "default", [] );
-	grunt.registerTask( "build", ["concat", "uglify"] );
+	grunt.registerTask( "build", ["concat", "replace", "uglify"] );
 };
