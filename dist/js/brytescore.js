@@ -1,5 +1,5 @@
-/*! Brytescore JavaScript library v0.3.1
- *  Copyright 2015 Brytecore, LLC
+/*! Brytescore JavaScript library v0.3.2
+ *  Copyright 2015-2016 Brytecore, LLC
  */
 
 ( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
@@ -41,33 +41,33 @@
 
 	/*** Private Variables ***/
 
-	var items = brytescore.q,               // Assign the queue to var, so it can be safely overridden
-		functionName,                       // The function run by the client
-		listeners = [],                     // Registered event listeners
-		xhr,                                // XML HTTP Request object
-		url = 'https://api.brytescore.com', // Path to the API
-		i,                                  // Counter
-		oneYear = 31536000000,              // One year, in milliseconds
-		APIKey,                             // Brytescore API Key
-		anonymousId,                        // Brytescore uuid
-		userId,                             // Client user id
-		sessionId,                          // Brytescore session id
-		pageViewId,                         // Brytescore page view id
+	var items = brytescore.q,                   // Assign the queue to var, so it can be safely overridden
+		functionName,                           // The function run by the client
+		listeners = [],                         // Registered event listeners
+		xhr,                                    // XML HTTP Request object
+		url = 'https://api.brytescore.com',     // Path to the API
+		i,                                      // Counter
+		oneYear = 31536000000,                  // One year, in milliseconds
+		APIKey,                                 // Brytescore API Key
+		anonymousId,                            // Brytescore uuid
+		userId,                                 // Client user id
+		sessionId,                              // Brytescore session id
+		pageViewId,                             // Brytescore page view id
 		heartBeatEventName = 'heartBeat',
 		pageViewEventName = 'pageView',
 		startHeartBeatTime = 0,
 		heartBeatInterval = 15000,
 		totalPageViewTime = 0,
-		heartbeatID,                        // the id of the heartbeat timer in case it needs to be stopped
-		inactivityID = 0,                   // the id of the inactivity timer.
-		inactivityLogoutID,                 // the id for the timer that will close session and all that.
-		eventListenerHandle,                //  the handle for the event listeners
+		heartbeatID,                            // The id of the heartbeat timer in case it needs to be stopped
+		inactivityID = 0,                       // The id of the inactivity timer.
+		inactivityLogoutID,                     // The id for the timer that will close session and all that.
+		eventListenerHandle,                    // The handle for the event listeners
 		oldHref = '',
-		sessionTimeout = false,             // boolean for whether the session is timed out or not.
+		sessionTimeout = false,                 // Boolean for whether the session is timed out or not.
 		library = 'javascript',
-		libraryVersion = '0.3.1',
+		libraryVersion = '0.3.2',    // The library version (set in package.json)
 		schemaVersion = {
-			'analytics': libraryVersion
+			'analytics': '0.3.1'
 		},
 		devMode = false,
 		validationMode = false;
