@@ -1,4 +1,4 @@
-<img src="http://brytecore.com/bc/products/dotcom/themes/big_data/images/brytescore-logo-@2x.png" width="400" height="81" alt="Brytescore API">
+<img src="https://cdn.brytecore.com/images/LeadBoosterlogo-ondark-@2X.png" width="400" height="81" alt="Brytescore API">
 
 # brytescore.js [![Build Status](https://travis-ci.org/Brytecore/brytescore.js.svg?branch=master)](https://travis-ci.org/Brytecore/brytescore.js)
 
