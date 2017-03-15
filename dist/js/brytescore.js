@@ -1,4 +1,4 @@
-/*! Brytescore JavaScript library v0.3.2
+/*! Brytescore JavaScript library v0.3.3
  *  Copyright 2015-2016 Brytecore, LLC
  */
 
@@ -65,7 +65,7 @@
 		oldHref = '',
 		sessionTimeout = false,                 // Boolean for whether the session is timed out or not.
 		library = 'javascript',
-		libraryVersion = '0.3.2',    // The library version (set in package.json)
+		libraryVersion = '0.3.3',    // The library version (set in package.json)
 		schemaVersion = {
 			'analytics': '0.3.1'
 		},
@@ -301,6 +301,16 @@
 	window.brytescore.submittedForm = function ( data ) {
 		brytescore.track( 'submittedForm', 'Submitted a Form', data );
 	};
+
+	/**
+	 * Sends a startedChat event.
+	 *
+	 * @param {{}} data The form data.
+	 */
+	window.brytescore.startedChat = function ( data ) {
+		brytescore.track( 'startedChat', 'User Started a Live Chat', data );
+	};
+
 
 	/**
 	 * Updates a user's account information.
