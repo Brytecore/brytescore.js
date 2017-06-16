@@ -54,6 +54,7 @@
 		pageViewId,                             // Brytescore page view id
 		heartBeatEventName = 'heartBeat',
 		pageViewEventName = 'pageView',
+		impersonateEventName = 'impersonate',
 		startHeartBeatTime = 0,
 		heartBeatInterval = 15000,
 		totalPageViewTime = 0,
@@ -69,7 +70,8 @@
 			'analytics': '0.3.1'
 		},
 		devMode = false,
-		validationMode = false;
+		validationMode = false,
+		impersonationMode = false;
 
 	/*** Private methods ***/
 
@@ -264,7 +266,7 @@
 	 * @param {string} data.userAccount.id
 	 */
 	window.brytescore.authenticated = function ( data ) {
-		if ( data && data.isImpersonating ) {
+		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
@@ -306,7 +308,7 @@
 	 * @param {boolean} data.isImpersonating
 	 */
 	window.brytescore.submittedForm = function ( data ) {
-		if ( data && data.isImpersonating ) {
+		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
@@ -320,7 +322,7 @@
 	 * @param {boolean} data.isImpersonating
 	 */
 	window.brytescore.startedChat = function ( data ) {
-		if ( data && data.isImpersonating ) {
+		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
@@ -334,7 +336,7 @@
 	 * @param {object} data The account data.
 	 */
 	window.brytescore.updatedUserInfo = function ( data ) {
-		if ( data && data.isImpersonating ) {
+		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
@@ -373,7 +375,7 @@
 	 * @param {boolean} data.isImpersonating
 	 */
 	window.brytescore.registeredAccount = function ( data ) {
-		if ( data && data.isImpersonating ) {
+		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
@@ -426,8 +428,26 @@
 		devMode = enabled;
 	};
 
-	window.brytescore.validationMode = function ( data ) {
-		validationMode = data;
+	/**
+	 * Sets validation mode.
+	 *
+	 * @param {boolean} enabled If true, then validation mode is enabled.
+	 */
+	window.brytescore.validationMode = function ( enabled ) {
+		validationMode = enabled;
+	};
+
+	/**
+	 * Sets impersonation mode.
+	 *
+	 * @param {object} data The event data.
+	 * @param {boolean} data.isImpersonating If true, then a user is being impersonated.
+	 */
+	window.brytescore.impersonate = function ( data ) {
+		if ( data.isImpersonating ) {
+			impersonationMode = true;
+			brytescore.track( impersonateEventName, 'Impersonated User', data );
+		}
 	};
 
 	/**
@@ -440,7 +460,7 @@
 	 * @param {string} data.referrer
 	 */
 	window.brytescore.pageView = function ( data ) {
-		if ( data && data.isImpersonating ) {
+		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
@@ -500,7 +520,7 @@
 	 * @param {boolean} data.isImpersonating
 	 */
 	window.brytescore.track = function ( eventName, eventDisplayName, data ) {
-		if ( data && data.isImpersonating ) {
+		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
