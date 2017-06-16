@@ -19,15 +19,15 @@
 		"eslint": "~3.17.1",
 		"grunt": "~1.0.1",
 		"grunt-contrib-concat": "~1.0.1",
-		"grunt-contrib-uglify": "~2.2.0",
+		"grunt-contrib-uglify": "~3.0.1",
 		"grunt-contrib-watch": "~1.0.0",
 		"grunt-replace": "~1.0.1",
 		"matchdep": "~1.0.1",
 		"mocha": "~2.4.5"
 	},
 	"scripts": {
-		"dev": "grunt build && grunt watch",
-		"build": "grunt build",
+		"dev": "npm install && grunt build && grunt watch",
+		"build": "npm install && grunt build",
 		"test": "npm -s run-script lint && npm -s run-script browsertest",
 		"lint": "eslint lib",
 		"browsertest": "mocha test/test.js"
