@@ -1,4 +1,4 @@
-<img src="https://cdn.brytecore.com/images/LeadBoosterlogo-ondark-@2X.png" width="400" height="81" alt="Brytescore API">
+<img src="examples/lead-booster-analytics.png" width="400" height="98" alt="Lead Booster Analytics">
 
 # brytescore.js [![Build Status](https://travis-ci.org/Brytecore/brytescore.js.svg?branch=master)](https://travis-ci.org/Brytecore/brytescore.js)
 
