@@ -42,7 +42,8 @@ module.exports = function( grunt ) {
 				preserveComments: /^!/
 			}, build: {
 				files: {
-					"dist/js/brytescore.min.js": ["dist/js/brytescore.js"]
+					"dist/js/brytescore.min.js": ["dist/js/brytescore.js"],
+					"examples/js/snippet.min.js": ["examples/js/snippet.js"]
 				}
 			}
 		},

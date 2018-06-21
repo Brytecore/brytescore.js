@@ -1,8 +1,11 @@
 /*! Brytescore JavaScript library v0.3.4
  *  Copyright 2015-2017 Brytecore, Inc
  */
+/*! Brytescore JavaScript library v0.3.4
+ *  Copyright 2015-2017 Brytecore, Inc
+ */
 
-( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
+(function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
 	'use strict';
 
 	/*** Compatibility checks ***/
@@ -65,13 +68,16 @@
 		oldHref = '',
 		sessionTimeout = false,                 // Boolean for whether the session is timed out or not.
 		library = 'javascript',
-		libraryVersion = '0.3.4',    // The library version (set in package.json)
+		libraryVersion = '0.3.5',    // The library version (set in package.json)
 		schemaVersion = {
 			'analytics': '0.3.1'
 		},
 		devMode = false,
 		validationMode = false,
-		impersonationMode = false;
+		impersonationMode = false,
+		localUrl = '',
+		xhrLocal = false,
+		xhrError = false;
 
 	/*** Private methods ***/
 
@@ -166,7 +172,7 @@
 			var namespace = arr[0];
 			var prop = arr[1];
 			// Check if the namespace is an object if it is not the package has not been loaded yet
-			method = ( 'object' === typeof window.brytescore[namespace] )
+			method = ('object' === typeof window.brytescore[namespace])
 				? window.brytescore[namespace][prop]
 				: null;
 		} else {
@@ -298,7 +304,7 @@
 
 		writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 
-		brytescore.track( 'authenticated', 'Logged In', data );
+		brytescore.boost( 'authenticated', 'Logged In', data );
 	};
 
 	/**
@@ -312,7 +318,7 @@
 			return;
 		}
 
-		brytescore.track( 'submittedForm', 'Submitted a Form', data );
+		brytescore.boost( 'submittedForm', 'Submitted a Form', data );
 	};
 
 	/**
@@ -326,7 +332,7 @@
 			return;
 		}
 
-		brytescore.track( 'startedChat', 'User Started a Live Chat', data );
+		brytescore.boost( 'startedChat', 'User Started a Live Chat', data );
 	};
 
 
@@ -365,7 +371,7 @@
 
 			writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 		}
-		brytescore.track( 'updatedUserInfo', 'Updated User Information', data );
+		brytescore.boost( 'updatedUserInfo', 'Updated User Information', data );
 	};
 
 	/**
@@ -404,7 +410,7 @@
 
 			writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 		}
-		brytescore.track( 'registeredAccount', 'Created a new account', data );
+		brytescore.boost( 'registeredAccount', 'Created a new account', data );
 	};
 
 
@@ -437,6 +443,10 @@
 		validationMode = enabled;
 	};
 
+	window.brytescore.localUrl = function ( data ) {
+		localUrl = data;
+	};
+
 	/**
 	 * Sets impersonation mode.
 	 *
@@ -446,7 +456,7 @@
 	window.brytescore.impersonate = function ( data ) {
 		if ( data.isImpersonating ) {
 			impersonationMode = true;
-			brytescore.track( impersonateEventName, 'Impersonated User', data );
+			brytescore.boost( impersonateEventName, 'Impersonated User', data );
 		}
 	};
 
@@ -470,7 +480,7 @@
 		data.pageUrl = window.location.href;
 		data.pageTitle = document.title;
 		data.referrer = document.referrer;
-		brytescore.track( pageViewEventName, 'Viewed a Page', data );
+		brytescore.boost( pageViewEventName, 'Viewed a Page', data );
 
 		// Update session cookie with new expiration date because of FF and Chrome issue on mac where they don't expire session cookies
 		var browserUA = navigator.userAgent;
@@ -512,27 +522,27 @@
 	};
 
 	/**
-	 * Main track function
+	 * Main boost function
 	 *
 	 * @param {string} eventName The event name.
 	 * @param {string} eventDisplayName The event display name.
 	 * @param {object} data The event data.
 	 * @param {boolean} data.isImpersonating
 	 */
-	window.brytescore.track = function ( eventName, eventDisplayName, data ) {
+	window.brytescore.boost = function ( eventName, eventDisplayName, data ) {
 		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
-		sendRequest( 'track', eventName, eventDisplayName, data );
+		sendRequest( 'boost', eventName, eventDisplayName, data );
 	};
 
 	/**
 	 * Sends a heartbeat event.
 	 */
 	window.brytescore.heartBeat = function () {
-		window.brytescore.track( heartBeatEventName, 'Heartbeat', { elapsedTime: totalPageViewTime } );
-		totalPageViewTime = totalPageViewTime + ( heartBeatInterval / 1000 );
+		window.brytescore.boost( heartBeatEventName, 'Heartbeat', {elapsedTime: totalPageViewTime} );
+		totalPageViewTime = totalPageViewTime + (heartBeatInterval / 1000);
 	};
 
 	/**
@@ -540,7 +550,7 @@
 	 *
 	 * @param {string} packageUrl The URL of the package.
 	 */
-	window.brytescore.load = function ( packageUrl ) {
+	window.brytescore.load = function ( packageUrl, fallback ) {
 		//var realestate = '{"name":"Brytecore Real Estate","namespace":"realestate","author":"Brytecore <info@brytecore.com>","version":"0.0.1","description":"Real estate visitor behavior and listing searches.","url":"","globals":{"listing":{"required":{"price":"number","mls_id":"string"},"optional":{"street_address":"string","street_address_2":"string","city":"string","state_province":"string","postal_code":"string","latitude":"string","longitude":"string"}}},"events":{"viewed_listing":{"display_name":"Viewed a listing","globals":["listing"]},"printed_driving_directions":{"display_name":"Printed driving directions","globals":["listing"]},"requested_showing":{"display_name":"Requested a showing","globals":["listing"]},"listing_impression":{"display_name":"Saw listing in search results","required":{"price":"number","mls_id":"string"},"optional":{"street_address":"string","street_address_2":"string","city":"string","state_province":"string","postal_code":"string","latitude":"string","longitude":"string"}}},"aggregates":{"average_listing_price":{"type":"average","aggregate_key":"mls_id","event":"viewed_listing","data_key":"price","scopes":["site","user","api_key"]},"listing_impressions":{"type":"count","event":"listing_impression","unique_key":"mls_id","scopes":["site","user","api_key"]},"median_listing_price":{"type":"median","aggregate_key":"mls_id","event":"viewed_listing","data_key":"price","scopes":["site","user","api_key"]}},"indicators":{"lookie-lou":{"type":"event","display_name":"Lookie-lou","event":{"name":"viewed_listing"},"weight":20},"driver":{"type":"repetition","display_name":"This guy likes to drive","events":[{"name": "printed_driving_directions","repititions": 5},{"name": "requested_showing","repetitions": 1}],"timeframe":"3d","weight":40},"go-getter":{"type":"sequence","display_name":"Im on the way!","events":[{"name": "viewed_listing","parameters": {"price": ["gte","400000"]}},{"name": "requested_showing"},{"name": "printed_driving_directions"}],"timeframe":"1d","weight":60}},"dependencies":{}}';
 		//var json = JSON.parse( realestate );
 
@@ -551,7 +561,7 @@
 		//	if ( 4 === AjaxReq.readyState && 200 === AJAX_req.status ) {
 		AjaxReq.onload = function () {
 			var state = AjaxReq.readyState;
-			if ( (!state || /loaded|complete/.test( state )) || ( 4 === AjaxReq.readyState && 200 === AjaxReq.status ) ) {
+			if ( (!state || /loaded|complete/.test( state )) || (4 === AjaxReq.readyState && 200 === AjaxReq.status) ) {
 
 				var json = JSON.parse( AjaxReq.responseText );
 				// Get just the events object of the package
@@ -568,7 +578,7 @@
 				for ( var prop in jsonEvents ) {
 					window.brytescore.factory = function ( eventName, packageNamespace, displayName ) {
 						return function () {
-							return window.brytescore.track( packageNamespace + '.' + eventName, displayName, arguments[0] );
+							return window.brytescore.boost( packageNamespace + '.' + eventName, displayName, arguments[0] );
 						};
 					};
 					window.brytescore[namespace][prop] = window.brytescore.factory( prop, namespace, jsonEvents[prop].displayName );
@@ -581,6 +591,11 @@
 						}
 					}
 				}
+			}
+		};
+		AjaxReq.onerror = function () {
+			if ( fallback ) {
+				brytescore.load( fallback );
 			}
 		};
 		AjaxReq.send();
@@ -612,7 +627,15 @@
 	 * @param {object} data
 	 */
 	function sendRequest( path, eventName, eventDisplayName, data ) {
-		xhr = createCORSRequest( 'Post', url + '/' + path );
+		if ( !xhrLocal ) {
+			xhr = createCORSRequest( 'Post', url + '/' + path );
+		} else {
+			if ( localUrl ) {
+				xhr = new XMLHttpRequest();
+				xhr.open( "POST", localUrl, true );
+				xhr.setRequestHeader( "Content-type", "application/json" );
+			}
+		}
 
 		if ( null !== xhr ) {
 			var eventNameDot = eventName.indexOf( '.' );
@@ -627,20 +650,20 @@
 				'sessionId': sessionId,
 				'library': library,
 				'libraryVersion': libraryVersion,
-				'schemaVersion': ( -1 === eventNameDot ) ? schemaVersion.analytics : schemaVersion[eventName.substring( 0, eventNameDot )],
+				'schemaVersion': (-1 === eventNameDot) ? schemaVersion.analytics : schemaVersion[eventName.substring( 0, eventNameDot )],
 				'data': data || {}
 			};
-
+			if ( xhrLocal ) {
+				eventData.brytecoreUrl = url + '/' + path;
+			}
 			if ( validationMode ) {
 				eventData.validationOnly = validationMode;
 			}
 
 			xhr.onload = serverResponse;
 			xhr.onerror = function ( err ) {
-				// TODO: Do something on error?
-				console.log( 'Error with request' );
-				console.log( err );
-				console.log( xhr.response );
+				xhrLocal = true;
+				sendRequest( path, eventName, eventDisplayName, data );
 			};
 
 			eventData = JSON.stringify( eventData );
@@ -738,7 +761,7 @@
 
 		writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 
-		brytescore.track( 'sessionStarted', 'started new session', {
+		brytescore.boost( 'sessionStarted', 'started new session', {
 			'sessionId': sessionId,
 			'browserUA': browserUA,
 			'anonymousId': anonymousId
@@ -841,7 +864,7 @@
 	 **/
 	var lut = [];
 	for ( var i = 0; 256 > i; i++ ) {
-		lut[i] = ( (16 > i) ? '0' : '' ) + (i).toString( 16 );
+		lut[i] = ((16 > i) ? '0' : '') + (i).toString( 16 );
 	}
 	window.brytescore.generateUUID = function () {
 		var d0 = Math.random() * 0xffffffff | 0;
@@ -906,12 +929,12 @@
 			// Waiting to send created event until session data is created.
 			// Only send event if cookie was created for first time.
 			if ( null === bc ) {
-				brytescore.track( 'brytescoreUUIDCreated', 'New user id Created', { 'anonymousId': anonymousId } );
+				brytescore.boost( 'brytescoreUUIDCreated', 'New user id Created', {'anonymousId': anonymousId} );
 			}
 			// Only send event if cookie was created for first time.
 			if ( null === sc || true === sessionTimeout ) {
 				sessionTimeout = false;
-				brytescore.track( 'sessionStarted', 'started new session', {
+				brytescore.boost( 'sessionStarted', 'started new session', {
 					'sessionId': sessionId,
 					'browserUA': browserUA,
 					'anonymousId': anonymousId
@@ -1003,7 +1026,7 @@
 		brytescore.init();
 	}
 
-}( window ) );
+}( window ));
 
 /*
  1. check for life session cookie
