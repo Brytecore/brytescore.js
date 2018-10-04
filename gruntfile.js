@@ -8,7 +8,7 @@ module.exports = function( grunt ) {
 				options: {
 					banner:
 						"/*! Brytescore JavaScript library v<%= pkg.version %>\n" +
-						" *  Copyright 2015-2017 Brytecore, Inc\n" +
+						" *  Copyright 2015-2018 Brytecore, Inc\n" +
 						" */\n"
 				},
 				src: [
@@ -42,7 +42,8 @@ module.exports = function( grunt ) {
 				preserveComments: /^!/
 			}, build: {
 				files: {
-					"dist/js/brytescore.min.js": ["dist/js/brytescore.js"]
+					"dist/js/brytescore.min.js": ["dist/js/brytescore.js"],
+					"examples/js/snippet.min.js": ["examples/js/snippet.js"]
 				}
 			}
 		},
