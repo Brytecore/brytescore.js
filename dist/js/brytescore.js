@@ -1,11 +1,7 @@
-/*! Brytescore JavaScript library v0.3.4
- *  Copyright 2015-2017 Brytecore, Inc
+/*! Brytescore JavaScript library v0.3.5
+ *  Copyright 2015-2018 Brytecore, Inc
  */
-/*! Brytescore JavaScript library v0.3.4
- *  Copyright 2015-2017 Brytecore, Inc
- */
-
-(function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
+( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
 	'use strict';
 
 	/*** Compatibility checks ***/
@@ -76,8 +72,7 @@
 		validationMode = false,
 		impersonationMode = false,
 		localUrl = '',
-		xhrLocal = false,
-		xhrError = false;
+		xhrLocal = false;
 
 	/*** Private methods ***/
 
@@ -172,7 +167,7 @@
 			var namespace = arr[0];
 			var prop = arr[1];
 			// Check if the namespace is an object if it is not the package has not been loaded yet
-			method = ('object' === typeof window.brytescore[namespace])
+			method = ( 'object' === typeof window.brytescore[namespace] )
 				? window.brytescore[namespace][prop]
 				: null;
 		} else {
@@ -285,7 +280,7 @@
 
 		if ( null !== bc ) {
 			values = JSON.parse( decodeURIComponent( bc ) );
-			if ( '' !== values.uid && values.uid != userID ) {
+			if ( '' !== values.uid && values.uid !== userID ) {
 				changeLoggedInUser( userID );
 			} else {
 				anonymousId = values.aid;
@@ -420,7 +415,6 @@
 	 * @param {string} apiKey The API key.
 	 */
 	window.brytescore.setAPIKey = function ( apiKey ) {
-
 		//console.log("api Key set: " + apiKey );
 		APIKey = apiKey;
 		//write to cookie for in case global variable isn't set for some reason
@@ -430,7 +424,7 @@
 
 		if ( null !== bc ) {
 			values = JSON.parse( decodeURIComponent( bc ) );
-			if ( '' !== values.apikey && values.apikey != apiKey ) {
+			if ( '' !== values.apikey && values.apikey !== apiKey ) {
 				cookieData = JSON.stringify( {
 					'apikey': apiKey
 				} );
@@ -563,8 +557,8 @@
 	 * Sends a heartbeat event.
 	 */
 	window.brytescore.heartBeat = function () {
-		window.brytescore.boost( heartBeatEventName, 'Heartbeat', {elapsedTime: totalPageViewTime} );
-		totalPageViewTime = totalPageViewTime + (heartBeatInterval / 1000);
+		window.brytescore.boost( heartBeatEventName, 'Heartbeat', { elapsedTime: totalPageViewTime } );
+		totalPageViewTime = totalPageViewTime + ( heartBeatInterval / 1000 );
 	};
 
 	/**
@@ -583,7 +577,7 @@
 		//	if ( 4 === AjaxReq.readyState && 200 === AJAX_req.status ) {
 		AjaxReq.onload = function () {
 			var state = AjaxReq.readyState;
-			if ( (!state || /loaded|complete/.test( state )) || (4 === AjaxReq.readyState && 200 === AjaxReq.status) ) {
+			if ( ( !state || /loaded|complete/.test( state ) ) || ( 4 === AjaxReq.readyState && 200 === AjaxReq.status ) ) {
 
 				var json = JSON.parse( AjaxReq.responseText );
 				// Get just the events object of the package
@@ -654,8 +648,8 @@
 		} else {
 			if ( localUrl ) {
 				xhr = new XMLHttpRequest();
-				xhr.open( "POST", localUrl, true );
-				xhr.setRequestHeader( "Content-type", "application/json" );
+				xhr.open( 'POST', localUrl, true );
+				xhr.setRequestHeader( 'Content-type', 'application/json' );
 			}
 		}
 
@@ -684,7 +678,7 @@
 				'sessionId': sessionId,
 				'library': library,
 				'libraryVersion': libraryVersion,
-				'schemaVersion': (-1 === eventNameDot) ? schemaVersion.analytics : schemaVersion[eventName.substring( 0, eventNameDot )],
+				'schemaVersion': ( -1 === eventNameDot ) ? schemaVersion.analytics : schemaVersion[eventName.substring( 0, eventNameDot )],
 				'data': data || {}
 			};
 			if ( xhrLocal ) {
@@ -898,7 +892,7 @@
 	 **/
 	var lut = [];
 	for ( var i = 0; 256 > i; i++ ) {
-		lut[i] = ((16 > i) ? '0' : '') + (i).toString( 16 );
+		lut[i] = ( ( 16 > i ) ? '0' : '' ) + ( i ).toString( 16 );
 	}
 	window.brytescore.generateUUID = function () {
 		var d0 = Math.random() * 0xffffffff | 0;
@@ -963,7 +957,7 @@
 			// Waiting to send created event until session data is created.
 			// Only send event if cookie was created for first time.
 			if ( null === bc ) {
-				brytescore.boost( 'brytescoreUUIDCreated', 'New user id Created', {'anonymousId': anonymousId} );
+				brytescore.boost( 'brytescoreUUIDCreated', 'New user id Created', { 'anonymousId': anonymousId } );
 			}
 			// Only send event if cookie was created for first time.
 			if ( null === sc || true === sessionTimeout ) {
@@ -1029,9 +1023,7 @@
 		//if we still didn't find apiKey read from the cookie
 		if ( 'undefined' === typeof APIKey ) {
 			var bc = readCookie( 'brytescore_apikey' ),
-				values,
-				cookieData,
-				date;
+				values;
 
 			if ( null !== bc ) {
 				values = JSON.parse( decodeURIComponent( bc ) );
@@ -1074,7 +1066,7 @@
 		brytescore.init();
 	}
 
-}( window ));
+}( window ) );
 
 /*
  1. check for life session cookie
