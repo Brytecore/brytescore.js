@@ -26,5 +26,22 @@
 		"strict": "off",
 		"space-in-parens": [ "warn", "always" ],
 		"keyword-spacing": "error"
-	}
+	},
+	"overrides": [
+		{
+			"files": "gruntfile.js",
+			"env": {
+				"node": true,
+				"es6": true
+			},
+			"parserOptions": {
+				"ecmaVersion": 6
+			},
+			"rules": {
+				"comma-dangle": [ "warn", "always-multiline" ],
+				"no-var": "error",
+				"strict": "error"
+			}
+		}
+	]
 }
