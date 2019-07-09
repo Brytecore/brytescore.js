@@ -7,16 +7,24 @@
 		"console": true,
 		"XDomainRequest": true
 	},
+	"extends": "eslint:recommended",
 	"rules": {
-		"camelcase": "warn",
-		"eqeqeq": ["warn"],
-		"quotes": ["warn", "single", "avoid-escape"],
-		"no-console": "warn",
-		"no-extend-native": "warn",
-		"no-shadow": "warn",
-		"no-shadow-restricted-names": "warn",
-		"no-unused-vars": ["error", {"args": "none"}],
-		"no-use-before-define": ["error", "nofunc"],
-		"yoda": ["error", "always"]
+		"no-underscore-dangle": "off",
+		"no-unused-vars": [ "warn", { "args": "none" } ],
+		"no-empty": [ "warn", { "allowEmptyCatch": true } ],
+		"quotes": [ "warn", "single", "avoid-escape" ],
+		"new-cap": "warn",
+		"no-use-before-define": [ "error", { "functions": false, "classes": false } ],
+		"yoda": [ "error", "always" ],
+		"comma-dangle": "off",
+		"semi": [ "error", "always" ],
+		"object-curly-spacing": [ "warn", "always" ],
+		"array-bracket-spacing": [ "warn", "always" ],
+		"no-console": [ "warn", { "allow": [ "warn", "error" ] } ],
+		"no-var": "off",
+		"eol-last": [ "error", "always" ],
+		"strict": "off",
+		"space-in-parens": [ "warn", "always" ],
+		"keyword-spacing": "error"
 	}
 }
