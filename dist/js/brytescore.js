@@ -1,6 +1,9 @@
 /*! Brytescore JavaScript library v0.3.5
  *  Copyright 2015-2018 Brytecore, Inc
  */
+/*! Brytescore JavaScript library v0.3.6
+ *  Copyright 2015-2018 Brytecore, Inc
+ */
 ( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
 	'use strict';
 
@@ -266,7 +269,7 @@
 	 * @param {object} data.userAccount
 	 * @param {string} data.userAccount.id
 	 */
-	window.brytescore.authenticated = function ( data ) {
+	window.brytescore.authenticated = function ( data, callback ) {
 		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
@@ -299,7 +302,7 @@
 
 		writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 
-		brytescore.boost( 'authenticated', 'Logged In', data );
+		brytescore.boost( 'authenticated', 'Logged In', data, callback );
 	};
 
 	/**
@@ -308,12 +311,12 @@
 	 * @param {object} data The chat data.
 	 * @param {boolean} data.isImpersonating
 	 */
-	window.brytescore.submittedForm = function ( data ) {
+	window.brytescore.submittedForm = function ( data, callback ) {
 		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
-		brytescore.boost( 'submittedForm', 'Submitted a Form', data );
+		brytescore.boost( 'submittedForm', 'Submitted a Form', data, callback );
 	};
 
 	/**
@@ -322,12 +325,12 @@
 	 * @param {object} data The form data.
 	 * @param {boolean} data.isImpersonating
 	 */
-	window.brytescore.startedChat = function ( data ) {
+	window.brytescore.startedChat = function ( data, callback ) {
 		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
 
-		brytescore.boost( 'startedChat', 'User Started a Live Chat', data );
+		brytescore.boost( 'startedChat', 'User Started a Live Chat', data, callback );
 	};
 
 
@@ -336,7 +339,7 @@
 	 *
 	 * @param {object} data The account data.
 	 */
-	window.brytescore.updatedUserInfo = function ( data ) {
+	window.brytescore.updatedUserInfo = function ( data, callback ) {
 		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
@@ -366,7 +369,7 @@
 
 			writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 		}
-		brytescore.boost( 'updatedUserInfo', 'Updated User Information', data );
+		brytescore.boost( 'updatedUserInfo', 'Updated User Information', data, callback );
 	};
 
 	/**
@@ -375,7 +378,7 @@
 	 * @param {object} data The registration data.
 	 * @param {boolean} data.isImpersonating
 	 */
-	window.brytescore.registeredAccount = function ( data ) {
+	window.brytescore.registeredAccount = function ( data, callback ) {
 		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
@@ -405,7 +408,7 @@
 
 			writeCookie( 'brytescore_uu', cookieData, date.toUTCString() );
 		}
-		brytescore.boost( 'registeredAccount', 'Created a new account', data );
+		brytescore.boost( 'registeredAccount', 'Created a new account', data, callback );
 	};
 
 
@@ -469,10 +472,10 @@
 	 * @param {object} data The event data.
 	 * @param {boolean} data.isImpersonating If true, then a user is being impersonated.
 	 */
-	window.brytescore.impersonate = function ( data ) {
+	window.brytescore.impersonate = function ( data, callback ) {
 		if ( data.isImpersonating ) {
 			impersonationMode = true;
-			brytescore.boost( impersonateEventName, 'Impersonated User', data );
+			brytescore.boost( impersonateEventName, 'Impersonated User', data, callback );
 		}
 	};
 
@@ -485,7 +488,7 @@
 	 * @param {string} data.pageTitle
 	 * @param {string} data.referrer
 	 */
-	window.brytescore.pageView = function ( data ) {
+	window.brytescore.pageView = function ( data, callback ) {
 		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
@@ -496,7 +499,7 @@
 		data.pageUrl = window.location.href;
 		data.pageTitle = document.title;
 		data.referrer = document.referrer;
-		brytescore.boost( pageViewEventName, 'Viewed a Page', data );
+		brytescore.boost( pageViewEventName, 'Viewed a Page', data, callback );
 
 		// Update session cookie with new expiration date because of FF and Chrome issue on mac where they don't expire session cookies
 		var browserUA = navigator.userAgent;
@@ -545,12 +548,11 @@
 	 * @param {object} data The event data.
 	 * @param {boolean} data.isImpersonating
 	 */
-	window.brytescore.boost = function ( eventName, eventDisplayName, data ) {
+	window.brytescore.boost = function ( eventName, eventDisplayName, data, callback ) {
 		if ( impersonationMode || data && data.isImpersonating ) {
 			return;
 		}
-
-		sendRequest( 'boost', eventName, eventDisplayName, data );
+		sendRequest( 'boost', eventName, eventDisplayName, data, callback );
 	};
 
 	/**
@@ -594,7 +596,7 @@
 				for ( var prop in jsonEvents ) {
 					window.brytescore.factory = function ( eventName, packageNamespace, displayName ) {
 						return function () {
-							return window.brytescore.boost( packageNamespace + '.' + eventName, displayName, arguments[0] );
+							return window.brytescore.boost( packageNamespace + '.' + eventName, displayName, arguments[0], arguments[1] );
 						};
 					};
 					window.brytescore[namespace][prop] = window.brytescore.factory( prop, namespace, jsonEvents[prop].displayName );
@@ -602,8 +604,11 @@
 					// Loop through the queue and process the items for this function and remove them from the queue
 					for ( var i = 0; i < window.brytescore.q.length; i++ ) {
 						if ( namespace + '.' + prop === window.brytescore.q[i][0] ) {
-							window.brytescore[namespace][prop]( window.brytescore.q[i][1] );
-							//window.brytescore.q.splice( i, 1 );
+							if ( window.brytescore.q[i][2] ) {
+								window.brytescore[namespace][prop]( window.brytescore.q[i][1], window.brytescore.q[i][2] );
+							} else {
+								window.brytescore[namespace][prop]( window.brytescore.q[i][1] );
+							}
 						}
 					}
 				}
@@ -642,7 +647,7 @@
 	 * @param {string} eventDisplayName
 	 * @param {object} data
 	 */
-	function sendRequest( path, eventName, eventDisplayName, data ) {
+	function sendRequest( path, eventName, eventDisplayName, data, callback ) {
 		if ( !xhrLocal ) {
 			xhr = createCORSRequest( 'Post', url + '/' + path );
 		} else {
@@ -666,6 +671,7 @@
 		}
 
 		if ( null !== xhr ) {
+			xhr.timeout = 5000;
 			var eventNameDot = eventName.indexOf( '.' );
 			var eventData = {
 				'event': eventName,
@@ -689,16 +695,46 @@
 			}
 
 			xhr.onload = serverResponse;
+			xhr.onreadystatechange = function () {
+				if ( xhr.readyState == 4 ) {
+					if ( callback ) {
+						try {
+							callback( xhr.status, JSON.parse( xhr.responseText ) );
+						} catch ( err ) {
+							callback( xhr.status, null, err );
+						}
+					}
+				}
+			};
 			xhr.onerror = function ( err ) {
 				xhrLocal = true;
-				sendRequest( path, eventName, eventDisplayName, data );
+				if ( callback ) {
+					try {
+						callback( xhr.status, null, err );
+					} catch ( error ) {
+						callback( xhr.status, null, error );
+					}
+				} else {
+					sendRequest( path, eventName, eventDisplayName, data, callback );
+				}
+			};
+
+			xhr.ontimeout = function ( e ) {
+				if ( callback ) {
+					callback( xhr.status, null, e );
+				}
 			};
 
 			eventData = JSON.stringify( eventData );
 			if ( devMode ) {
 				console.log( eventData ); // eslint-disable-line no-console
+				callback( "DevMode", null );
 			} else {
 				xhr.send( eventData );
+			}
+		} else {
+			if ( callback ) {
+				callback( "cors not supported", null );
 			}
 		}
 	}
