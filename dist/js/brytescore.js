@@ -1,7 +1,7 @@
 /*! Brytescore JavaScript library v0.3.5
  *  Copyright 2015-2018 Brytecore, Inc
  */
-/*! Brytescore JavaScript library v0.3.6
+/*! Brytescore JavaScript library v0.3.7
  *  Copyright 2015-2018 Brytecore, Inc
  */
 ( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
@@ -648,6 +648,7 @@
 	 * @param {object} data
 	 */
 	function sendRequest( path, eventName, eventDisplayName, data, callback ) {
+		var xhr;
 		if ( !xhrLocal ) {
 			xhr = createCORSRequest( 'Post', url + '/' + path );
 		} else {
@@ -694,7 +695,30 @@
 				eventData.validationOnly = validationMode;
 			}
 
-			xhr.onload = serverResponse;
+			xhr.onload = function serverResponse() {
+				var response = xhr.responseText;
+				if ( response && '' !== response ) {
+					response = JSON.parse( response );
+
+					if ( response && response.hasOwnProperty( 'code' ) ) {
+						switch ( response.code.toLowerCase() ) {
+							case 'success':
+								// Don't do anything we were successful
+								break;
+							case 'unauthorizederror':
+								// TODO: Fire event
+								break;
+							case 'badrequesterror':
+								returnError( 'The request was not properly formatted.' );
+								break;
+							default:
+								//console.log( response );
+								// TODO: Something here?
+								break;
+						}
+					}
+				}
+			};
 			xhr.onreadystatechange = function () {
 				if ( xhr.readyState == 4 ) {
 					if ( callback ) {
@@ -728,7 +752,9 @@
 			eventData = JSON.stringify( eventData );
 			if ( devMode ) {
 				console.log( eventData ); // eslint-disable-line no-console
-				callback( "DevMode", null );
+				if ( callback ) {
+					callback( "DevMode", null );
+				}
 			} else {
 				xhr.send( eventData );
 			}
@@ -770,34 +796,6 @@
 		return corsXhr;
 	}
 
-
-	/**
-	 * The callback function that is called when the XMLHttpRequest is finished.
-	 */
-	function serverResponse() {
-		var response = xhr.responseText;
-		if ( response && '' !== response ) {
-			response = JSON.parse( response );
-
-			if ( response && response.hasOwnProperty( 'code' ) ) {
-				switch ( response.code.toLowerCase() ) {
-					case 'success':
-						// Don't do anything we were successful
-						break;
-					case 'unauthorizederror':
-						// TODO: Fire event
-						break;
-					case 'badrequesterror':
-						returnError( 'The request was not properly formatted.' );
-						break;
-					default:
-						//console.log( response );
-						// TODO: Something here?
-						break;
-				}
-			}
-		}
-	}
 
 	/**
 	 * Process a change in the logged in user.
