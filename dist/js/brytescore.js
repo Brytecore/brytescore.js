@@ -1,8 +1,5 @@
-/*! Brytescore JavaScript library v0.3.5
- *  Copyright 2015-2018 Brytecore, Inc
- */
 /*! Brytescore JavaScript library v0.3.7
- *  Copyright 2015-2018 Brytecore, Inc
+ *  Copyright 2015-2019 Brytecore, Inc
  */
 ( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
 	'use strict';
@@ -67,7 +64,7 @@
 		oldHref = '',
 		sessionTimeout = false,                 // Boolean for whether the session is timed out or not.
 		library = 'javascript',
-		libraryVersion = '0.3.5',    // The library version (set in package.json)
+		libraryVersion = '0.3.7',    // The library version (set in package.json)
 		schemaVersion = {
 			'analytics': '0.3.1'
 		},
