@@ -14,12 +14,13 @@ module.exports = function( grunt ) {
 				options: {
 					banner:
 						'/*! Brytescore JavaScript library v<%= pkg.version %>\n' +
-						' *  Copyright 2015-2019 Brytecore, Inc\n' +
+						' *  Copyright 2015-2021 Brytecore, Inc\n' +
 						' */\n',
 				},
 				src: [
 					//'lib/**/*.js',
 					'lib/brytescore.js',
+					'lib/chatbot.js',
 				],
 				dest: 'dist/js/brytescore.js',
 			},
