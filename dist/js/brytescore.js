@@ -1053,6 +1053,34 @@
 
 	};
 
+	window.brytescore.getAID = function() {
+		var bc = readCookie( 'brytescore_uu' ),
+			values;
+
+		if (!anonymousId) {
+			if ( null !== bc ) {
+				values = JSON.parse(decodeURIComponent(bc));
+				return values.aid;
+			}
+		} else {
+			return anonymousId;
+		}
+
+	};
+	window.brytescore.getUID = function() {
+		var bc = readCookie( 'brytescore_uu' ),
+			values;
+
+		if (!userId) {
+			if ( null !== bc ) {
+				values = JSON.parse(decodeURIComponent(bc));
+				return values.uid;
+			}
+		} else {
+			return userId;
+		}
+
+	};
 	/**
 	 * Initialize the object.
 	 */
@@ -1164,21 +1192,24 @@
 	var chatapi = 'https://chat-api.brytecore.net';
 	var xhttp = new XMLHttpRequest();
 	var apikey = window.brytescore.getApiKey();
+	var aid = window.brytescore.getAID();
+	var uid = window.brytescore.getUID();
 	var settingsURL = chatapi + '/settings/enabled?apiKey=' + apikey + '&domain=' + window.location.hostname + '&url=' + window.location.href;
 	xhttp.onload = function() {
-		startChat(xhttp.response);
+		startChat(xhttp.response, aid);
 	};
 	xhttp.open('GET', settingsURL, true);
 	xhttp.setRequestHeader('Content-type', 'application/json');
 	xhttp.send();
 
-	function startChat(response) {
+	function startChat(response, aid) {
 		if(response) {
 			var res = JSON.parse(response);
 			var livechatLicense = res.data.key;
 			if (res && true === res.data.is_enabled) {
 				window.__lc = window.__lc || {};
 				window.__lc.license = livechatLicense;
+				window.__lc.params = [{name: 'aid', value:aid},{name: 'uid', value:uid}];
 				(function (n, t, c) {
 					function i(n) {
 						return e._h ? e._h.apply(null, n) : e._q.push(n)
