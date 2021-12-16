@@ -1267,15 +1267,15 @@
 						uid: uid
 					} );
 
-					if ( -1 !== window.location.href.indexOf( '/bio/' ) ) {
+					if (res && true !== res.data.is_visible) {
 						LiveChatWidget.call( 'hide' );
 					}
 					function onReady( initialData ) {
 						var chat_data = LiveChatWidget.get( 'chat_data' );
 
 						var threadID = chat_data.threadId;
-						if ( -1 === window.location.href.indexOf( '/bio/' ) ) {
-							if ( null != threadID ) {
+						if (res && true !== res.data.is_visible) {
+							if ( null !== threadID ) {
 								LiveChatWidget.call( 'maximize' );
 							}
 						}
