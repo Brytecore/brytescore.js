@@ -16,12 +16,13 @@
 	"main": "lib/brytescore.js",
 	"dependencies": {},
 	"devDependencies": {
-		"eslint": "~5.16.0",
-		"grunt": "~1.0.4",
-		"grunt-contrib-concat": "~1.0.1",
-		"grunt-contrib-uglify": "~4.0.1",
+		"eslint": "~8.11.0",
+		"eslint-plugin-node": "~11.1.0",
+		"grunt": "~1.4.1",
+		"grunt-contrib-concat": "~2.0.0",
+		"grunt-contrib-uglify": "~5.0.1",
 		"grunt-contrib-watch": "~1.1.0",
-		"grunt-replace": "~1.0.1"
+		"grunt-replace": "~2.0.2"
 	},
 	"scripts": {
 		"dev": "npm install && grunt build && grunt watch",
