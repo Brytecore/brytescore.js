@@ -12,6 +12,7 @@ module.exports = function( grunt ) {
 		concat: {
 			pwn_js: {
 				options: {
+					preserveComments: /^!/,
 					banner:
 						'/*! Brytescore JavaScript library v<%= pkg.version %>\n' +
 						' *  Copyright 2015-2022 Brytecore, Inc\n' +
