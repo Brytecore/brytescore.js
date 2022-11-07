@@ -1,7 +1,7 @@
 {
 	"name": "brytescore.js",
 	"author": "Brytecore <info@brytecore.com>",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"license": "MIT",
 	"description": "The javascript library for integrating the Brytescore API.",
 	"keywords": [
@@ -16,11 +16,11 @@
 	"main": "lib/brytescore.js",
 	"dependencies": {},
 	"devDependencies": {
-		"eslint": "~8.11.0",
+		"eslint": "~8.27.0",
 		"eslint-plugin-node": "~11.1.0",
-		"grunt": "~1.4.1",
-		"grunt-contrib-concat": "~2.0.0",
-		"grunt-contrib-uglify": "~5.0.1",
+		"grunt": "~1.5.3",
+		"grunt-contrib-concat": "~2.1.0",
+		"grunt-contrib-uglify": "~5.2.2",
 		"grunt-contrib-watch": "~1.1.0",
 		"grunt-replace": "~2.0.2"
 	},

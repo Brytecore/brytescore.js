@@ -1,4 +1,4 @@
-/*! Brytescore JavaScript library v2.0.1
+/*! Brytescore JavaScript library v2.0.2
  *  Copyright 2015-2022 Brytecore, Inc
  */
 ( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
@@ -64,7 +64,7 @@
 		oldHref = '',
 		sessionTimeout = false,                 // Boolean for whether the session is timed out or not.
 		library = 'javascript',
-		libraryVersion = '2.0.1',    // The library version (set in package.json)
+		libraryVersion = '2.0.2',    // The library version (set in package.json)
 		schemaVersion = {
 			'analytics': '0.3.1'
 		},
@@ -1214,6 +1214,7 @@
 					var livechatLicense = res.data.key;
 					var livechatgroup = res.data.group;
 					var inboxid = res.data.inbox_id;
+					var BASE_URL = res.data.baseurl;
 					var g = document.createElement("script"),
 						s = document.head || document.getElementsByTagName("head")[0];
 
@@ -1222,7 +1223,7 @@
 					g.onload=function(){
 						window.chatwootSDK.run({
 							websiteToken: inboxid,
-							baseUrl: ''
+							baseUrl: BASE_URL
 						});
 					};
 				}
