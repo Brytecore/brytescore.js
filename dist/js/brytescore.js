@@ -1218,7 +1218,7 @@
 					var g = document.createElement("script"),
 						s = document.head || document.getElementsByTagName("head")[0];
 
-					g.src="https://chatbot.brytecore.net/app/js/sdk.js";
+					g.src="https://chatbot.brytecore.net/packs/js/sdk.js";
 					s.parentNode.insertBefore(g,s);
 					g.onload=function(){
 						window.chatwootSDK.run({
