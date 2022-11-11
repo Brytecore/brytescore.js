@@ -1,7 +1,7 @@
 {
 	"name": "brytescore.js",
 	"author": "Brytecore <info@brytecore.com>",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"license": "MIT",
 	"description": "The javascript library for integrating the Brytescore API.",
 	"keywords": [

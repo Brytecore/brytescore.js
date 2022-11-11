@@ -1,4 +1,4 @@
-/*! Brytescore JavaScript library v2.0.2
+/*! Brytescore JavaScript library v2.0.3
  *  Copyright 2015-2022 Brytecore, Inc
  */
 ( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
@@ -64,7 +64,7 @@
 		oldHref = '',
 		sessionTimeout = false,                 // Boolean for whether the session is timed out or not.
 		library = 'javascript',
-		libraryVersion = '2.0.2',    // The library version (set in package.json)
+		libraryVersion = '2.0.3',    // The library version (set in package.json)
 		schemaVersion = {
 			'analytics': '0.3.1'
 		},
@@ -1218,7 +1218,7 @@
 					var g = document.createElement("script"),
 						s = document.head || document.getElementsByTagName("head")[0];
 
-					g.src="https://chat-api.brytecore.net/app/js/sdk.js";
+					g.src="https://chatbot.brytecore.net/app/js/sdk.js";
 					s.parentNode.insertBefore(g,s);
 					g.onload=function(){
 						window.chatwootSDK.run({
