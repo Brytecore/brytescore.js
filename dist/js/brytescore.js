@@ -1190,7 +1190,7 @@
 // ChatBot
 ( function ( window, undefined ) {
 	try {
-		var chatapi = 'https://chat-api.brytecore.net';
+		var chatapi = 'https://chat-api.brytecore.com';
 		var xhttp = new XMLHttpRequest();
 		var apikey = window.brytescore.getApiKey();
 		var aid = window.brytescore.getAID();
@@ -1224,7 +1224,7 @@
 							var g = document.createElement( 'script' ),
 								s = document.head || document.getElementsByTagName( 'head' )[0];
 		
-							g.src='https://chatbot.brytecore.net/packs/js/sdk.js';
+							g.src='https://chatbot.brytecore.com/packs/js/sdk.js';
 							s.parentNode.insertBefore( g,s );
 							g.onload=function(){
 								window.chatwootSDK.run( {
