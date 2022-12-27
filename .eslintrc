@@ -5,7 +5,8 @@
 	"globals": {
 		"brytescore": true,
 		"console": true,
-		"XDomainRequest": true
+		"XDomainRequest": true,
+		"LiveChatWidget": true
 	},
 	"extends": "eslint:recommended",
 	"rules": {
