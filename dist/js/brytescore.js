@@ -1,4 +1,4 @@
-/*! Brytescore JavaScript library v2.2.0
+/*! Brytescore JavaScript library v2.3.0
  *  Copyright 2015-2022 Brytecore, Inc
  */
 ( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
@@ -64,7 +64,7 @@
 		oldHref = '',
 		sessionTimeout = false,                 // Boolean for whether the session is timed out or not.
 		library = 'javascript',
-		libraryVersion = '2.2.0',    // The library version (set in package.json)
+		libraryVersion = '2.3.0',    // The library version (set in package.json)
 		schemaVersion = {
 			'analytics': '0.3.1'
 		},
@@ -1188,7 +1188,7 @@
  */
 
 // ChatBot
-( function ( window, undefined ) {
+( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
 	try {
 		var chatapi = 'https://chat-api.brytecore.com';
 		var xhttp = new XMLHttpRequest();
@@ -1215,6 +1215,30 @@
 					var livechatLicense;
 					var livechatgroup;
 					switch ( res.data.chat_version ) {
+						case 'chatbot_v2':
+							window.__be = window.__be || {};
+							window.__be.id = res.data.key;
+
+							( function() {
+								var be = document.createElement( 'script' );
+								be.type = 'text/javascript';
+								be.async = true;
+								be.src = 'https://cdn.chatbot.com/widget/plugin.js';
+								var s = document.getElementsByTagName( 'script' )[0];
+								s.parentNode.insertBefore( be, s );
+							} ) ();
+
+							if ( '' === uid ) {
+								uid = aid;
+							}
+							window.BE_API = window.BE_API || {};
+							window.BE_API.onLoad = function() {
+								window.BE_API.setUserAttributes( {
+									aid: aid,
+									uid: uid
+								} );
+							};
+							break;
 						case 'brytebot':
 							window.chatwootSettings = res.data.chatwoot_settings;
 							livechatLicense = res.data.key;
@@ -1224,16 +1248,16 @@
 							var g = document.createElement( 'script' ),
 								s = document.head || document.getElementsByTagName( 'head' )[0];
 		
-							g.src='https://chatbot.brytecore.com/packs/js/sdk.js';
+							g.src = 'https://chatbot.brytecore.com/packs/js/sdk.js';
 							s.parentNode.insertBefore( g,s );
-							g.onload=function(){
+							g.onload = function() {
 								window.chatwootSDK.run( {
 									websiteToken: inboxid,
 									baseUrl: BASE_URL
 								} );
 							};
 							break;
-						case 'commversion':
+						case 'commversion': {
 							livechatLicense = res.data.key;
 							livechatgroup = res.data.group;
 							// var url = window.location.href;
@@ -1285,7 +1309,7 @@
 								!n.__lc.asyncInit && e.init(), ( n.LiveChatWidget = n.LiveChatWidget || e );
 							} )( window, document, [].slice );
 
-							function onReady( initialData ) {
+							function onReady( initialData ) { // eslint-disable-line no-inner-declarations
 								LiveChatWidget.call( 'set_session_variables', {
 									cv_exit_event: 'false',
 									aid: aid,
@@ -1319,6 +1343,12 @@
 									} );
 								}
 							};
+							break;
+						}
+						case 'commversion_v2':
+							livechatLicense = res.data.key;
+							livechatgroup = res.data.group;
+							window.__lc=window.__lc||{},Object.assign(window.__lc,{license:livechatLicense,group:livechatgroup,chat_between_groups:!1}),function(t,c,e){function n(t){return i._h?i._h.apply(null,t):i._q.push(t)}var i={_q:[],_h:null,_v:"2.0",on:function(){n(["on",e.call(arguments)])},once:function(){n(["once",e.call(arguments)])},off:function(){n(["off",e.call(arguments)])},get:function(){if(!i._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return n(["get",e.call(arguments)])},call:function(){n(["call",e.call(arguments)])},init:function(){var t=c.createElement("script");t.defer=!0,t.type="text/javascript",t.src="https://cdn.livechatinc.com/tracking.js",c.head.appendChild(t)}};!t.__lc.asyncInit&&i.init(),t.LiveChatWidget=t.LiveChatWidget||i}(window,document,[].slice),window.commversion={};var scriptTag_0=document.createElement("script");scriptTag_0.src="https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-exit-intent.js",scriptTag_0.defer=!0,document.body.appendChild(scriptTag_0);var scriptTag_1=document.createElement("script");scriptTag_1.src="https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-device.js",scriptTag_1.defer=!0,document.body.appendChild(scriptTag_1);var scriptTag_2=document.createElement("script");scriptTag_2.src="https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-input-error.js",scriptTag_2.defer=!0,document.body.appendChild(scriptTag_2);var scriptTag_3=document.createElement("script");scriptTag_3.src="https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-gtm.js",scriptTag_3.defer=!0,document.body.appendChild(scriptTag_3);
 							break;
 					}
 				}
