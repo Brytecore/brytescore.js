@@ -15,7 +15,7 @@ module.exports = function( grunt ) {
 					preserveComments: /^!/,
 					banner:
 						'/*! Brytescore JavaScript library v<%= pkg.version %>\n' +
-						' *  Copyright 2015-2022 Brytecore, Inc\n' +
+						' *  Copyright 2015-2024 Brytecore, Inc\n' +
 						' */\n',
 				},
 				src: [
