@@ -968,9 +968,9 @@
 			userId = '';
 		}
 
-		var url = window.location.url;
-		var params = url.searchParams;
-		commUserId = params.get( 'bc_user_id' );
+		
+		var queryParams = new URLSearchParams(window.location.search);
+		commUserId = queryParams.get( 'bc_user_id' );
 
 
 		data = JSON.stringify( {
