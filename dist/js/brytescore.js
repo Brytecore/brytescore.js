@@ -1,5 +1,5 @@
 /*! Brytescore JavaScript library v2.3.0
- *  Copyright 2015-2022 Brytecore, Inc
+ *  Copyright 2015-2024 Brytecore, Inc
  */
 ( function ( window, undefined ) { // eslint-disable-line no-shadow-restricted-names
 	'use strict';
@@ -49,6 +49,8 @@
 		APIKey,                                 // Brytescore API Key
 		anonymousId,                            // Brytescore uuid
 		userId,                                 // Client user id
+		commUserId, 							// Campaign User Id
+		userType,								// campaign or user
 		sessionId,                              // Brytescore session id
 		pageViewId,                             // Brytescore page view id
 		heartBeatEventName = 'heartBeat',
@@ -280,18 +282,20 @@
 
 		if ( null !== bc ) {
 			values = JSON.parse( decodeURIComponent( bc ) );
-			if ( '' !== values.uid && values.uid !== userID ) {
+			userType = values.user_type ? values.user_type : 'user';
+			if ( '' !== values.uid && values.uid !== userID && 'user' === userType ) {
 				changeLoggedInUser( userID );
 			} else {
-				anonymousId = values.aid;
+				anonymousId = values.aid;				
 			}
 		} else {
 			anonymousId = brytescore.generateUUID();
 		}
 
 		cookieData = JSON.stringify( {
-			'aid': anonymousId,
-			'uid': userID
+			'aid': 'campaign' === userType ? userId : anonymousId,
+			'uid': 'campaign' === userType ? values.uid : userID, 
+			'user_type': userType			
 		} );
 
 		date = new Date();
@@ -349,16 +353,18 @@
 				date;
 
 			userId = userID;
-			if ( null !== bc ) {
+			if ( null !== bc ) {				
 				values = JSON.parse( decodeURIComponent( bc ) );
+				userType = values.user_type ? values.user_type : 'user';
 				anonymousId = values.aid;
 			} else {
 				anonymousId = brytescore.generateUUID();
 			}
 
 			cookieData = JSON.stringify( {
-				'aid': anonymousId,
-				'uid': userID
+				'aid': 'campaign' === userType ? userId : anonymousId,
+				'uid': 'campaign' === userType ? values.uid : userID, 
+				'user_type': userType	
 			} );
 
 			date = new Date();
@@ -390,14 +396,16 @@
 			userId = userID;
 			if ( null !== bc ) {
 				values = JSON.parse( decodeURIComponent( bc ) );
+				userType = values.user_type ? values.user_type : 'user';
 				anonymousId = values.aid;
 			} else {
 				anonymousId = brytescore.generateUUID();
 			}
 
 			cookieData = JSON.stringify( {
-				'aid': anonymousId,
-				'uid': userID
+				'aid': 'campaign' === userType ? userId : anonymousId,
+				'uid': 'campaign' === userType ? values.uid : userID, 
+				'user_type': userType	
 			} );
 
 			date = new Date();
@@ -812,7 +820,8 @@
 		// Update cookie so the correct user is pulled.
 		var cookieData = JSON.stringify( {
 			'aid': anonymousId,
-			'uid': userID
+			'uid': userID,
+			'user_type': 'user'
 		} );
 
 		var date = new Date();
@@ -953,14 +962,21 @@
 			values = JSON.parse( decodeURIComponent( bc ) );
 			anonymousId = values.aid;
 			userId = values.uid;
+			userType = values.user_type;
 		} else {
 			anonymousId = brytescore.generateUUID();
 			userId = '';
 		}
 
+		var url = window.location.url;
+		var params = url.searchParams;
+		commUserId = params.get( 'bc_user_id' );
+
+
 		data = JSON.stringify( {
-			'aid': anonymousId,
-			'uid': userId
+			'aid': commUserId && userId ? userId : anonymousId,
+			'uid': commUserId && userId ? commUserId : commUserId ? commUserId : userId,
+			'user_type': commUserId ? 'campaign' : userType ? userType : 'user'
 		} );
 
 		date = new Date();
