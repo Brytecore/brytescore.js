@@ -1235,7 +1235,8 @@
 							window.BE_API.onLoad = function() {
 								window.BE_API.setUserAttributes( {
 									aid: aid,
-									uid: uid
+									uid: uid,
+									apiKey: apikey
 								} );
 							};
 							break;
