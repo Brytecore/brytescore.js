@@ -1239,6 +1239,10 @@
 									apiKey: apikey
 								} );
 							};
+							window.BE_API.onMessage = function ( result ) {
+								var x = { result:result};
+								brytescore('sentChatMessage', x);
+							};
 							break;
 						case 'brytebot':
 							window.chatwootSettings = res.data.chatwoot_settings;
