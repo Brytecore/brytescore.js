@@ -1254,8 +1254,7 @@
 								} );
 							};
 							window.BE_API.onMessage = function ( result ) {
-								console.log( result );
-								brytescore( 'sentChatMessage', { result:result } );
+								brytescore( 'sentChatMessage',  result );
 							};
 							break;
 						case 'brytebot':
