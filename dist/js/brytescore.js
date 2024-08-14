@@ -330,6 +330,20 @@
 		brytescore.boost( 'startedChat', 'User Started a Live Chat', data, callback );
 	};
 
+	/**
+	 * Sends a sentChatMessage event.
+	 *
+	 * @param {object} data The chat data.
+	 * @param {boolean} data.isImpersonating
+	 */
+	window.brytescore.sentChatMessage = function ( data, callback ) {
+		if ( impersonationMode || data && data.isImpersonating ) {
+			return;
+		}
+
+		brytescore.boost( 'sentChatMessage', 'User sent a chat message', data, callback );
+	};
+
 
 	/**
 	 * Updates a user's account information.
@@ -1240,8 +1254,8 @@
 								} );
 							};
 							window.BE_API.onMessage = function ( result ) {
-								var x = { result:result};
-								brytescore('sentChatMessage', x);
+								console.log( result );
+								brytescore( 'sentChatMessage', { result:result } );
 							};
 							break;
 						case 'brytebot':
