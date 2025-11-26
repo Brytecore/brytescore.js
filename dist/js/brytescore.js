@@ -1220,6 +1220,53 @@
 		console.error( error );
 	}
 
+	function loadCvChatScript() {
+		var s = document.createElement("script");
+		s.src = "https://cht-srvc.net/api/lc.js?client=rn_reece_nichols";
+		s.async = true;
+		document.body.appendChild(s);
+		console.log("LiveChat script loaded");
+	}
+
+	function initializeLiveChat() {
+		var attempts = 0;
+		var maxAttempts = 7;
+		var retryDelay = 300;
+		var _tryInit = function tryInit() {
+			if (typeof LiveChatWidget === "undefined" || window.__lc_inited) {
+			if (attempts < maxAttempts) {
+				attempts++;
+				setTimeout(_tryInit, retryDelay);
+			} else {
+				console.error("Failed to initialize LiveChat script");
+			}
+			} else {
+			LiveChatWidget.init();
+			LiveChatWidget.on("ready", function () {
+				LiveChatWidget.get("customer_data", function (data) {
+				var status = data === null || data === void 0 ? void 0 : data.status;
+				if (status === "chatting" || status === "queued") {
+					document.body.classList.remove("chat-hidden");
+				}
+				});
+			});
+			}
+		};
+		_tryInit();
+	}
+	
+	function setInitialState() {
+		document.body.classList.add("chat-hidden");
+	}
+
+	function markUserInteraction() {
+		setTimeout(function () {
+			document.body.classList.remove("chat-hidden");
+			console.log("Chat widget visible after interaction");
+		}, 100);
+	}
+
+
 	function startChat( response, aid, uid ) {
 		if ( response ) {
 			try {
@@ -1364,56 +1411,23 @@
 							break;
 						}
 						case 'commversion_v2':
-							livechatLicense = res.data.key;
-							livechatgroup = res.data.group;
-							window.__lc = window.__lc || {}, Object.assign(window.__lc, {
-								license: livechatLicense,
-								group: livechatgroup,
-								chat_between_groups: !1
-							}),
-							function(t, c, e) {
-								function n(t) {
-									return i._h ? i._h.apply(null, t) : i._q.push(t)
-								}
-								var i = {
-									_q: [],
-									_h: null,
-									_v: "2.0",
-									on: function() {
-										n(["on", e.call(arguments)])
-									},
-									once: function() {
-										n(["once", e.call(arguments)])
-									},
-									off: function() {
-										n(["off", e.call(arguments)])
-									},
-									get: function() {
-										if (!i._h) throw new Error("[LiveChatWidget] You can't use getters before load.");
-										return n(["get", e.call(arguments)])
-									},
-									call: function() {
-										n(["call", e.call(arguments)])
-									},
-									init: function() {
-										var t = c.createElement("script");
-										t.defer = !0, t.type = "text/javascript", t.src = "https://cdn.livechatinc.com/tracking.js", c.head.appendChild(t)
-									}
-								};
-								!t.__lc.asyncInit && i.init(), t.LiveChatWidget = t.LiveChatWidget || i
-							}(window, document, [].slice), window.commversion = {
-								disallowedCountries: ["PK", "IN", "YE"]
-							};
-						var scriptTag_0 = document.createElement("script");
-						scriptTag_0.src = "https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-exit-intent.js", scriptTag_0.defer = !0, document.body.appendChild(scriptTag_0);
-						var scriptTag_1 = document.createElement("script");
-						scriptTag_1.src = "https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-device.js", scriptTag_1.defer = !0, document.body.appendChild(scriptTag_1);
-						var scriptTag_2 = document.createElement("script");
-						scriptTag_2.src = "https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-input-error.js", scriptTag_2.defer = !0, document.body.appendChild(scriptTag_2);
-						var scriptTag_3 = document.createElement("script");
-						scriptTag_3.src = "https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-gtm.js", scriptTag_3.defer = !0, document.body.appendChild(scriptTag_3);
-						var scriptTag_4 = document.createElement("script");
-						scriptTag_4.src = "https://cht-srvc.net/cdn/@commversion/libs@0/dist/lc-geoblocking.js", scriptTag_4.defer = !0, document.body.appendChild(scriptTag_4);						
+							var style = document.createElement("style");
+							style.textContent = "\n  body.chat-hidden #chat-widget-container {\n    display: none !important;\n    pointer-events: none !important;\n    z-index: -1 !important;\n  }\n";
+							document.head.appendChild(style);
+
+							window.__lc = window.__lc || {};
+							Object.assign(window.__lc, {
+								asyncInit: true
+							});
+							setInitialState();
+							loadCvChatScript();
+							initializeLiveChat();
+							// Listen for first user interaction
+							["click", "keydown", "scroll", "touchstart"].forEach(function (evt) {
+								return window.addEventListener(evt, markUserInteraction, {
+									once: true
+								});
+							});
 							break;
 					}
 				}
